@@ -1,6 +1,7 @@
 package console;
 
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 
@@ -9,79 +10,85 @@ import bdd.BddException;
 
 public class Menu {
 
-	public static void affichageMenu() {
+	/**
+	 * Console interface between user and DBMS.
+	 */
+	public static void console() {
 
 		BDD bdd = new BDD();
-		int rep = 0;
 		Scanner sc = new Scanner(System.in);
-		String s;
+		StringTokenizer st;
+		String[] rep;
+		int i;
 
 		do {
-			try {
-				System.out.println("\n******************   Menu   ******************\n");
-				System.out.println("1) Afficher les tables");
-				System.out.println("2) Creer une table");
-				System.out.println("3) Modifier une table");
-				System.out.println("4) Supprimer une table");
-				System.out.println("5) Quittez");
-
-				rep = sc.nextInt();
-
-				switch (rep) {
-				case 1:
-					bdd.affichageDesTables();
-					break;
-				case 2:
-					System.out.println("Nom de la table ? ");
-					s=sc.nextLine();
-					bdd.ajoutTable(s);
-					break;
-				case 3:
-					System.out.println("Nom de la table ? ");
-					s=sc.nextLine();
-					modifierTable(bdd,s);
-					break;
-				case 4:
-					System.out.println("Nom de la table ? ");
-					s=sc.nextLine();
-					bdd.supprimerTable(s);
-					break;
-				case 5:
-					break;
-				default:
-					System.out.println("Choix impossible");
-				}
-			} catch (BddException e) {
+			st = new StringTokenizer(sc.nextLine());
+			rep = new String[st.countTokens()];
+			i = 0;
+			while (st.hasMoreTokens()) {
+				rep[i++] = st.nextToken();
 			}
-		} while (rep != 5);
+			
+			switch (rep[0]) {
+			case "help":
+				help();
+			case "display":
+				bdd.displayRelSchema();
+				break;
+			case "create":
+				bdd.addRelSchema(rep);
+				break;
+			case "exit":
+				System.out.println("Goodbye");
+			default:
+				System.out.println("Choice not existing");
+			}
+			
+		} while (rep[0] != "exit");
 		sc.close();
 	}
-
-	private static void modifierTable(BDD bdd, String nextLine) {
-		// TODO Auto-generated method stub
+	
+	/**
+	 * Display of console's command.
+	 */
+	public static void help(){
+		System.out.println("\n\n\ncommand : \thelp\n");
+		System.out.println("List and describ each command.");
 		
+		System.out.println("\n\n\ncommand : \texit\n");
+		System.out.println("End the program.");
+		
+		System.out.println("\n\n\ncommand : \tcreate RelName NbCol TypeCol[1] TypeCol[2] ... TypeCol[NbCol]\n");
+		System.out.println("Create a relation nammed RelName with NbCol columns and each columns has a type of int, float or stringT, T being the string length.");
+	
+		System.out.println("\n\n\ncommand : \tdisplay\n");
+		System.out.println("Displays all relations.");
 	}
 
-	public static void affichageConnexion() {
-
-		boolean mdpIsOkay = false;
-		String reponse;
-		Scanner sc = new Scanner(System.in);
-
-		do {
-			System.out.println("***Entrez le mot de passe***(Tapez \"exit\" pour quitter)");
-			reponse = (sc.nextLine());
-			mdpIsOkay=reponse.equals("mdp");
-
-		} while (!reponse.equals("exit") && (mdpIsOkay == false));
-
-		sc.close();
-
-		if (reponse.equals("exit")) {
-			System.exit(0);
-		}
-
-		affichageMenu();
-
-	}
+	/**
+	 * First step, ask the password of the data base but actually launch an exception god knows for what...
+	 */
+//	public static void displayConnexion() {
+//
+//		boolean mdpIsOkay = false;
+//		String reponse;
+//		Scanner sc = new Scanner(System.in);
+//
+//		do {
+//			System.out.println("***Please, enter password***(Type \"exit\" to egress)");
+//			reponse = (sc.next());
+//			mdpIsOkay = reponse.equals("mdp");
+//
+//		} while (!reponse.equals("exit") && (mdpIsOkay == false));
+//
+//		sc.close();
+//
+//		if (reponse.equals("exit")) {
+//			System.out.println("Goodbye");
+//			System.exit(0);
+//		}
+//
+//		console();
+//
+//	}
 }

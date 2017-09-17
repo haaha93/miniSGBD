@@ -1,5 +1,7 @@
 package bdd;
 
+//For the moment not used !!!
+
 import java.util.ArrayList;
 
 public class Table {

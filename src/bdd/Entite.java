@@ -2,6 +2,8 @@ package bdd;
 
 import java.util.ArrayList;
 
+//For the moment not used !!!
+
 public class Entite {
 	
 	private ArrayList <String> valeursAttributs;	
