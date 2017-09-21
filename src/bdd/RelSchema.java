@@ -14,7 +14,7 @@ public class RelSchema {
 	RelSchema(String[] userInput){
 		name=userInput[1];
 		nbColumns=Integer.parseInt(userInput[2]);
-		typeColumns=new String[nbColumns];
+		typeColumns=new String[nbColumns]; //selection du type à faire
 		for (int i = 3 ; i < userInput.length ; i++)
 			typeColumns[i-3]=userInput[i];
 	}
