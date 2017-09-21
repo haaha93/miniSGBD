@@ -20,13 +20,19 @@ public class Menu {
 		StringTokenizer st;
 		String[] rep;
 		int i;
-
+		
 		do {
+			
+			System.out.println("Enter your command line (help for list of commands"); 
 			st = new StringTokenizer(sc.nextLine());
 			rep = new String[st.countTokens()];
 			i = 0;
+			
+
 			while (st.hasMoreTokens()) {
+				
 				rep[i++] = st.nextToken();
+				
 			}
 			
 			switch (rep[0]) {
@@ -44,7 +50,7 @@ public class Menu {
 				System.out.println("Choice not existing");
 			}
 			
-		} while (rep[0] != "exit");
+		} while (!rep[0].equals("exit"));
 		sc.close();
 	}
 	
