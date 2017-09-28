@@ -14,7 +14,7 @@ public class Dbdef {
 
 	public Dbdef() {
 		this.db = new ArrayList<RelDef>();
-		this.compteurRel = 0;
+		this.compteurRel = 0 ;
 	}
 
 }
