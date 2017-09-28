@@ -8,8 +8,7 @@ import java.io.RandomAccessFile;
 import constant.Constant;
 
 public class DiskManager {
-	public static void createFile(int fileID) { // cree un fichier si non
-												// existant
+	public static void createFile(int fileID) { // cree un fichier si non  existant
 
 		File file = new File("/BDD/Data_" + fileID + ".rf");
 
@@ -25,11 +24,7 @@ public class DiskManager {
 
 	}
 
-	public static PageId addPage(PageId page) throws IOException { // ajoute une
-																	// page au
-																	// nombre
-																	// total de
-																	// pages
+	public static PageId addPage(PageId page) throws IOException { // ajoute une page au nombre total de pages
 
 		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
 		RandomAccessFile raf = new RandomAccessFile(file, "wb");
@@ -55,8 +50,8 @@ public class DiskManager {
 	}
 
 
-	public static void writePage(PageId page, String buffer) throws IOException {// a
-																					// faire
+	public static void writePage(PageId page, String buffer) throws IOException {
+																					
 		File file = new File("/BDD/Data_" + page.getIdx() + ".rf");
 		RandomAccessFile ecriturePage = new RandomAccessFile(file, "wb");
 		ecriturePage.seek(Constant.PAGESIZE * page.getIdx());
