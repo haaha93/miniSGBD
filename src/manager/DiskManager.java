@@ -40,6 +40,10 @@ public class DiskManager {
 
 	}
 
-	public static void writePage(int fileID) {// a faire
+	public static void writePage(int fileID, String buffer) throws IOException {// a faire
+		File file = new File("/BDD/Data_" + fileID + ".rf");
+		RandomAccessFile ecriturePage = new RandomAccessFile(file, "wb");
+		
+		ecriturePage.writeBytes(buffer);
 	}
 }
