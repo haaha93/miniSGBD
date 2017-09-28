@@ -1,8 +1,8 @@
 package manager;
 
 public class PageId {
-	private int fileId, idx;
-	private static long pageSize = 64*1024;
+	private int fileId, 
+				idx;	
 
 	public PageId(int fileId, int idx) {
 		this.fileId = fileId; //numero du fichier
@@ -25,15 +25,5 @@ public class PageId {
 
 	public void setIdx(int idx) {
 		this.idx = idx;
-	}
-
-	public static long getPageSize() {
-		return pageSize;
-	}
-	
-	
-	
-	
-	
-	
+	}	
 }
