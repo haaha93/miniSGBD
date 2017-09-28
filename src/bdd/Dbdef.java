@@ -22,4 +22,32 @@ public class Dbdef {
 		compteurRel=listRelation.size();
 	}
 
+	public List<RelDef> getListRelation() {
+		return listRelation;
+	}
+
+	public void setListRelation(List<RelDef> listRelation) {
+		this.listRelation = listRelation;
+	}
+
+	public int getCompteurRel() {
+		return compteurRel;
+	}
+
+	public void setCompteurRel(int compteurRel) {
+		this.compteurRel = compteurRel;
+	}
+	
+	public String toString(){
+		StringBuffer dbString = new StringBuffer();
+		
+		
+		for(int i=0; i<listRelation.size(); i++){
+			dbString.append("Relation "+i+" ").append(listRelation.get(i).toString());
+		}
+		
+		return dbString.toString();
+	}
+	
+
 }

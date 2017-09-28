@@ -28,5 +28,16 @@ public class RelSchema {
 			System.out.print(s+" ");
 		System.out.println();
 	}
+	
+	public String toString(){
+		StringBuffer relString = new StringBuffer();
+		relString.append("Nom Rel:").append(name).append(",").append(" nbColumn: ").append(nbColumns).append(" type columns : ");
+		
+		for(int i=0; i< nbColumns; i++){
+			relString.append(typeColumns[i]).append(" ");
+		}
+		
+		return relString.toString();
+	}
 
 }

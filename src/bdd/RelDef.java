@@ -12,5 +12,9 @@ public class RelDef {
 		this.page = new PageId(page, 0);
 	}
 	
+	public String toString(){
+		
+		return relSchema.toString()+page.toString();
+	}
 	
 }
