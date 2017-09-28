@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-public class DiskManaga {
+public class DiskManager {
 	public static void createFile(int fileID) { //cree un fichier si non existant
 
 		File file = new File("/BDD/Data_" + fileID + ".rf");
@@ -41,6 +41,5 @@ public class DiskManaga {
 	}
 
 	public static void writePage(int fileID) {// a faire
-
 	}
 }
