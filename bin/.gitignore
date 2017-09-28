@@ -1,3 +1,9 @@
-/manager/
-/constant/
 /bdd/
+/console/
+/constant/
+<<<<<<< HEAD
+/manager/
+/minisgbd/
+=======
+/bdd/
+>>>>>>> branch 'master' of https://github.com/haaha93/miniSGBD

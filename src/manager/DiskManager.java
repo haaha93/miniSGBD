@@ -38,9 +38,17 @@ public class DiskManager {
 
 	}
 
-	public static void readPage(int pageID) { // a faire
+	public static void readPage(PageId page,String buffer) throws IOException {
 
+		StringBuffer sb = new StringBuffer();
+		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
+		RandomAccessFile raf = new RandomAccessFile(file, "rb");
+		raf.seek(Constant.PAGESIZE*page.getIdx());
+		for(int i = 0 ; i < Constant.PAGESIZE ; i++)
+			sb.append(raf.readByte());		
+		buffer = sb.toString();		
 	}
+
 
 	public static void writePage(PageId page, String buffer) throws IOException {
 																					
