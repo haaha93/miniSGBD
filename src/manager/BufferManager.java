@@ -6,7 +6,7 @@ import constant.Constant;
 
 public class BufferManager{
 	
-	private Frame [] frames;
+	private static Frame [] frames;
 	
 	public BufferManager() {
 		frames = new Frame [Constant.F];

@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Iterator;
+
+import manager.HeapFile;
 
 public class GlobalManager {
 	
-	private Dbdef db;
+	private static Dbdef db;
+	private static ArrayList<HeapFile> heapFiles;
 	
 	public void init(){
 		db = new Dbdef();
