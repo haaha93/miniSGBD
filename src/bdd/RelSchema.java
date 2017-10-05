@@ -6,6 +6,12 @@ public class RelSchema {
 	private int nbColumns;
 	private String [] typeColumns;
 	
+	
+	
+	public RelSchema() {
+		super();
+	}
+
 	/**
 	 * 
 	 * @param userInput , tab containing the name of the relation, the number of columns and the type of each columns enter by user.

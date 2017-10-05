@@ -14,8 +14,8 @@ public class BufferManager{
 			f = new Frame();
 	}
 	
-	// Algo "clock" tourne à l'infi si pinCount == 1 pour chaque frame
-	public String getPage(PageId pageToRead) throws IOException {
+	// Algo "clock" tourne a l'infini si pinCount == 1 pour chaque frame
+	public static String getPage(PageId pageToRead) throws IOException {
 		String s="";
 		int i = 0;
 		boolean chosen = false;
@@ -52,7 +52,7 @@ public class BufferManager{
 		return s;
 	}
 	
-	public PageId freePAge(PageId pageToFree,boolean isDirty) {
+	public static PageId freePAge(PageId pageToFree,boolean isDirty) {
 		
 		for (Frame f : frames) {
 			if (f.getPageId().equals(pageToFree)) {

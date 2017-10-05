@@ -14,17 +14,19 @@ public class GlobalManager {
 	private static Dbdef db;
 	private static ArrayList<HeapFile> heapFiles;
 
-	public void init() {
+	public static void init() {
 		db = new Dbdef();
 		heapFiles = new ArrayList<HeapFile>();
+		heapFiles.add(new HeapFile(new RelDef(0)));
+		
 		refreshHeapFiles();
 	}
 
-	public void createRelation(String[] userInput) {
+	public static void createRelation(String[] userInput) {
 		db.addRelationToDB(userInput);
 	}
 
-	public void finish() throws IOException {
+	public static void finish() throws IOException {
 		Iterator it = db.getListRelation().iterator();
 		File file = new File("Catalog.def");
 		RandomAccessFile enrengistrerDb = new RandomAccessFile(file, "wb");
