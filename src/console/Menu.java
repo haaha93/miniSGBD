@@ -6,7 +6,6 @@ import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
 
 import bdd.BDD;
-import bdd.BddException;
 //import manager.DiskManager;
 
 public class Menu {

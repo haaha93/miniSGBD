@@ -36,9 +36,9 @@ public class GlobalManager {
 	public static void refreshHeapFiles() {
 
 		for (int i = 0; i < db.getListRelation().size(); i++) {
-			if(!heapFiles.contains(db.getListRelation().get(i)))
+			if (!heapFiles.contains(db.getListRelation().get(i)))
 				heapFiles.add(new HeapFile(db.getListRelation().get(i)));
-			
+
 		}
 
 	}
