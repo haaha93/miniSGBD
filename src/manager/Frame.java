@@ -4,8 +4,8 @@ public class Frame {
 	
 	private String buffer;
 	private PageId pageId;
-	private boolean dirty;
-	private int pinCount,
+	private int pinCount;
+	private boolean dirty,	
 				refBit;
 	
 	public Frame() {
@@ -13,7 +13,7 @@ public class Frame {
 		pageId = null;
 		pinCount = 0;
 		dirty = false;
-		refBit = 0;
+		refBit = false;
 	}
 
 	public String getBuffer() {
@@ -40,11 +40,11 @@ public class Frame {
 		this.pinCount = pinCount;
 	}
 
-	public int getRefBit() {
+	public boolean getRefBit() {
 		return refBit;
 	}
 
-	public void setRefBit(int refBit) {
+	public void setRefBit(boolean refBit) {
 		this.refBit = refBit;
 	}
 

@@ -36,9 +36,9 @@ public class BufferManager{
 		}
 		
 		do {
-			if (frames[i].getPinCount()==0 && frames[i].getRefBit()==1)
-				frames[i].setRefBit(0);
-			else if (frames[i].getPinCount()==0 && frames[i].getRefBit()==0)
+			if (frames[i].getPinCount()==0 && frames[i].getRefBit())
+				frames[i].setRefBit(false);
+			else if (frames[i].getPinCount()==0 && !frames[i].getRefBit())
 				chosen=true;
 			i=chosen?i:i+1;
 			i=i==Constant.F?0:i;
@@ -58,6 +58,7 @@ public class BufferManager{
 			if (f.getPageId().equals(pageToFree)) {
 				f.setDirty(isDirty);
 				f.setPinCount(0);
+				f.setRefBit(true);
 				return pageToFree;
 			}				
 		}
