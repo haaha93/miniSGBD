@@ -8,7 +8,7 @@ public class BufferManager{
 	
 	private static Frame [] frames;
 	
-	public BufferManager() {
+	public static void bufferManager() {
 		frames = new Frame [Constant.F];
 		for (Frame f : frames)
 			f = new Frame();

@@ -5,12 +5,6 @@ public class RelSchema {
 	private String name;
 	private int nbColumns;
 	private String [] typeColumns;
-	
-	
-	
-	public RelSchema() {
-		super();
-	}
 
 	/**
 	 * 

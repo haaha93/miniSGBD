@@ -14,15 +14,12 @@ public class HeapFile {
 
 	// Le Header devra avoir un nom de fichier different des autres noms de
 	// fichier relations
-	public void createHeader(HeapFile heapFile) throws IOException {
-		
-		
-		
-		DiskManager.addPage(heapFile.relDef.getPage());
-		BufferManager.getPage(heapFile.relDef.getPage());
-		DiskManager.writePage(heapFile.relDef.getPage(), "0");
-		BufferManager.freePAge(heapFile.relDef.getPage(), true);
-		
+	public void createHeader() throws IOException {
+
+		DiskManager.addPage(relDef.getPage());
+		BufferManager.getPage(relDef.getPage());
+		DiskManager.writePage(relDef.getPage(), "0");
+		BufferManager.freePAge(relDef.getPage(), true);
 
 	}
 

@@ -7,6 +7,7 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import manager.BufferManager;
 import manager.HeapFile;
 
 public class GlobalManager {
@@ -16,14 +17,16 @@ public class GlobalManager {
 
 	public static void init() {
 		db = new Dbdef();
-		heapFiles = new ArrayList<HeapFile>();
-		heapFiles.add(new HeapFile(new RelDef(0)));
-		
+		BufferManager.bufferManager();
+		heapFiles = new ArrayList<HeapFile>();		
 		refreshHeapFiles();
 	}
 
-	public static void createRelation(String[] userInput) {
+	public static void createRelation(String[] userInput) throws IOException {
 		db.addRelationToDB(userInput);
+		HeapFile heapFile = new HeapFile(db.getListRelation().get(db.getListRelation().size()-1));
+		heapFiles.set(db.getCompteurRel()-1, heapFile);
+		heapFiles.get(db.getCompteurRel()-1).createHeader();
 	}
 
 	public static void finish() throws IOException {

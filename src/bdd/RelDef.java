@@ -7,12 +7,6 @@ public class RelDef {
 	private RelSchema relSchema;
 	private PageId page;
 	
-	
-	
-	public RelDef(int pageFileId) {
-		relSchema = new RelSchema();
-		page = new PageId(pageFileId,0);
-	}
 
 	public RelDef(String[] userInput,int page) {
 		relSchema = new RelSchema(userInput);
