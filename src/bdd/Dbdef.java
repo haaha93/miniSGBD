@@ -14,12 +14,12 @@ public class Dbdef {
 
 	public Dbdef() {
 		this.listRelation = new ArrayList<RelDef>();
-		this.compteurRel = 0 ;
+		this.compteurRel = 0;
 	}
-	
+
 	public void addRelationToDB(String[] userInput) {
 		listRelation.add(new RelDef(userInput, listRelation.size()));
-		compteurRel=listRelation.size();
+		compteurRel = listRelation.size();
 	}
 
 	public List<RelDef> getListRelation() {
@@ -37,17 +37,24 @@ public class Dbdef {
 	public void setCompteurRel(int compteurRel) {
 		this.compteurRel = compteurRel;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		StringBuffer dbString = new StringBuffer();
-		
-		
-		for(int i=0; i<listRelation.size(); i++){
-			dbString.append("Relation "+i+" ").append(listRelation.get(i).toString());
+
+		for (int i = 0; i < listRelation.size(); i++) {
+			dbString.append("Relation " + i + " ").append(listRelation.get(i).toString());
 		}
-		
+
 		return dbString.toString();
 	}
-	
+
+	public RelSchema geRelSchemaByName(String name) {
+
+		for (RelDef rd : listRelation)
+			if (rd.getRelSchema().getName().equals(name))
+				return rd.getRelSchema();
+
+		return null;
+	}
 
 }
