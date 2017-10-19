@@ -6,6 +6,7 @@ import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
 
 import bdd.BDD;
+import bdd.GlobalManager;
 //import manager.DiskManager;
 
 public class Menu {
@@ -43,6 +44,8 @@ public class Menu {
 			case "create":
 				bdd.addRelSchema(rep);
 				break;
+			case "insert":
+				GlobalManager.insert(rep[1], rep);
 			case "exit":
 				System.out.println("Goodbye");
 			default:
@@ -66,7 +69,11 @@ public class Menu {
 		System.out.println("\n\n\ncommand : \tcreate RelName NbCol TypeCol[1] TypeCol[2] ... TypeCol[NbCol]\n");
 		System.out.println(
 				"Create a relation nammed RelName with NbCol columns and each columns has a type of int, float or stringT, T being the string length.");
-
+		
+		System.out.println("\n\n\ncommand : \tinsert RelName Val[1] Val[2] ... Val[NbCol]\n");
+		System.out.println(
+				"Insert a record of RelName relation with NbCol values of the relation");
+		
 		System.out.println("\n\n\ncommand : \tdisplay\n");
 		System.out.println("Displays all relations.");
 	}
