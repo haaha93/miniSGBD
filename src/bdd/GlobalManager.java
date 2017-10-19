@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import constant.Constant;
 import manager.BufferManager;
 import manager.HeapFile;
 
@@ -25,7 +26,9 @@ public class GlobalManager {
 
 	public static void createRelation(String[] userInput) throws IOException {
 		RelSchema relSchema = new RelSchema(userInput);
-		db.addRelationToDB(relSchema,calculRecordSize(relSchema));
+		int sizeRecord=calculRecordSize(relSchema);
+		int slotCount = (int) (Constant.PAGESIZE/(8*sizeRecord+1));
+		db.addRelationToDB(relSchema,sizeRecord,slotCount);
 		HeapFile heapFile = new HeapFile(db.getListRelation().get(db.getListRelation().size() - 1));
 		heapFiles.set(db.getCompteurRel() - 1, heapFile);
 		heapFiles.get(db.getCompteurRel() - 1).createHeader();

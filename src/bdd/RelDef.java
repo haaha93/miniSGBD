@@ -7,6 +7,7 @@ public class RelDef {
 	private RelSchema relSchema;
 	private PageId page;
 	private int recordSize;
+	private int slotCount;
 	
 
 	public RelDef(String[] userInput,int page) {
@@ -14,11 +15,12 @@ public class RelDef {
 		this.page = new PageId(page, 0);
 	}	
 	
-	public RelDef(RelSchema relSchema, int page, int recordSize) {
+	public RelDef(RelSchema relSchema, int page, int recordSize, int slotCount) {
 		super();
 		this.relSchema = relSchema;
 		this.page = new PageId(page,0);
 		this.recordSize = recordSize;
+		this.slotCount=slotCount;
 	}
 
 
