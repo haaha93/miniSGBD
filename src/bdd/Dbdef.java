@@ -1,9 +1,10 @@
 package bdd;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Dbdef {
+public class Dbdef implements Serializable {
 	private List<RelDef> listRelation;
 	private int compteurRel;
 
@@ -53,7 +54,7 @@ public class Dbdef {
 		return dbString.toString();
 	}
 
-	public RelSchema geRelSchemaByName(String name) {
+	public RelSchema getRelSchemaByName(String name) {
 
 		for (RelDef rd : listRelation)
 			if (rd.getRelSchema().getName().equals(name))

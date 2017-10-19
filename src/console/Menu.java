@@ -1,22 +1,19 @@
 package console;
 
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-import javax.swing.JOptionPane;
-
-import bdd.BDD;
 import bdd.GlobalManager;
-//import manager.DiskManager;
 
 public class Menu {
 
 	/**
 	 * Console interface between user and DBMS.
+	 * @throws IOException 
 	 */
-	public static void console() {
+	public static void console() throws IOException {
 
-		BDD bdd = new BDD();
 		Scanner sc = new Scanner(System.in);
 		StringTokenizer st;
 		String[] rep;
@@ -39,10 +36,10 @@ public class Menu {
 			case "help":
 				help();
 			case "display":
-				bdd.displayRelSchema();
+				GlobalManager.displayRelSchema();
 				break;
 			case "create":
-				bdd.addRelSchema(rep);
+				GlobalManager.createRelation(rep);
 				break;
 			case "insert":
 				GlobalManager.insert(rep[1], rep);

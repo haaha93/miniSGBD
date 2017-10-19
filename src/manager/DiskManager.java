@@ -44,7 +44,7 @@ public class DiskManager {
 		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
 		RandomAccessFile raf = new RandomAccessFile(file, "rb");
 		raf.seek(Constant.PAGESIZE*page.getIdx());
-		for(int i = 0 ; i < Constant.PAGESIZE ; i++)
+		for(int i = 0 ; i < Constant.PAGESIZE  ; i++)
 			sb.append(raf.readByte());		
 		buffer = sb.toString();		
 	}
