@@ -6,13 +6,23 @@ public class RelDef {
 	
 	private RelSchema relSchema;
 	private PageId page;
+	private int recordSize;
 	
 
 	public RelDef(String[] userInput,int page) {
 		relSchema = new RelSchema(userInput);
 		this.page = new PageId(page, 0);
-	}
+	}	
 	
+	public RelDef(RelSchema relSchema, int page, int recordSize) {
+		super();
+		this.relSchema = relSchema;
+		this.page = new PageId(page,0);
+		this.recordSize = recordSize;
+	}
+
+
+
 	public String toString(){
 		
 		return relSchema.toString()+page.toString();

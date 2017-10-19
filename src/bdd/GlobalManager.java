@@ -24,7 +24,8 @@ public class GlobalManager {
 	}
 
 	public static void createRelation(String[] userInput) throws IOException {
-		db.addRelationToDB(userInput);
+		RelSchema relSchema = new RelSchema(userInput);
+		db.addRelationToDB(relSchema,calculRecordSize(relSchema));
 		HeapFile heapFile = new HeapFile(db.getListRelation().get(db.getListRelation().size() - 1));
 		heapFiles.set(db.getCompteurRel() - 1, heapFile);
 		heapFiles.get(db.getCompteurRel() - 1).createHeader();
@@ -60,24 +61,28 @@ public class GlobalManager {
 	}
 
 
-//	public static void insert(String name, String[] userInput) {
-//		Record record = new Record();
-//		List <String> typeColumns = db.geRelSchemaByName(name).getTypeColumns();
-//		List <String> recordToSave = new ArrayList(typeColumns.size());
-//		String type;
-//		int longueur;
-//		
-//		for (int i = 0 ; i < recordToSave.size() ; i++){
-//			 if (typeColumns.get(i).charAt(0)=='S'){
-//				 type=typeColumns.get(i).substring(0, 6);
-//				 longueur = Integer.parseInt((typeColumns.get(i).substring(6)));
-//			 }
-//			 else
-//				 type = typeColumns.get(i);
-//			 
-//			 switch (type){
-//			 case "int" : record.getValues().set(i, userInput[i+2]);
-//			 }
-//		}
-//	}
+	public static int calculRecordSize(RelSchema relSchema) {
+		List <String> typeColumns = relSchema.getTypeColumns();
+		String type;
+		int longueur=0;
+		int recordSize=0;
+		
+		for (int i = 0 ; i < typeColumns.size() ; i++){
+			 if (typeColumns.get(i).charAt(0)=='S'){
+				 type=typeColumns.get(i).substring(0, 6);
+				 longueur = Integer.parseInt((typeColumns.get(i).substring(6)));
+			 }
+			 else
+				 type = typeColumns.get(i);
+			 
+			 switch (type){
+			 case "int": case "float" : recordSize+=4;
+			 	break;
+			 case "String" : recordSize+=2*longueur;
+			 	break;
+			 }
+		}
+		
+		return recordSize;
+	}
 }

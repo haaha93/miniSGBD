@@ -21,6 +21,11 @@ public class Dbdef {
 		listRelation.add(new RelDef(userInput, listRelation.size()));
 		compteurRel = listRelation.size();
 	}
+	
+	public void addRelationToDB(RelSchema relSchema, int recordSize) {
+		listRelation.add(new RelDef(relSchema, listRelation.size(),recordSize));
+		compteurRel = listRelation.size();
+	}
 
 	public List<RelDef> getListRelation() {
 		return listRelation;
