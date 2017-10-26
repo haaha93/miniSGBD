@@ -1,26 +1,30 @@
 package manager;
 
+import java.nio.ByteBuffer;
+
+import constant.Constant;
+
 public class Frame {
 	
-	private String buffer;
+	private ByteBuffer buffer;
 	private PageId pageId;
 	private int pinCount;
 	private boolean dirty,	
 				refBit;
 	
 	public Frame() {
-		buffer = "";
+		buffer.allocate((int) Constant.PAGESIZE);
 		pageId = null;
 		pinCount = 0;
 		dirty = false;
 		refBit = false;
 	}
 
-	public String getBuffer() {
+	public ByteBuffer getBuffer() {
 		return buffer;
 	}
 
-	public void setBuffer(String buffer) {
+	public void setBuffer(ByteBuffer buffer) {
 		this.buffer = buffer;
 	}
 

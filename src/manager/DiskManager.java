@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
 
 import constant.Constant;
 
 public class DiskManager {
-	public static void createFile(int fileID) { // cree un fichier si non  existant
+	public static void createFile(int fileID) { // cree un fichier si non
+												// existant
 
 		File file = new File("/BDD/Data_" + fileID + ".rf");
 
@@ -24,13 +26,17 @@ public class DiskManager {
 
 	}
 
-	public static PageId addPage(PageId page) throws IOException { // ajoute une page au nombre total de pages
+	public static PageId addPage(PageId page) throws IOException { // ajoute une
+																	// page au
+																	// nombre
+																	// total de
+																	// pages
 
 		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
 		RandomAccessFile raf = new RandomAccessFile(file, "wb");
 		raf.seek(Constant.PAGESIZE * page.getIdx());
 
-		for (int i = 0; i < Constant.PAGESIZE ; i++) {
+		for (int i = 0; i < Constant.PAGESIZE; i++) {
 			raf.write('0');
 		}
 
@@ -38,23 +44,22 @@ public class DiskManager {
 
 	}
 
-	public static void readPage(PageId page,String buffer) throws IOException {
+	public static void readPage(PageId page, ByteBuffer buffer) throws IOException {
 
-		StringBuffer sb = new StringBuffer();
 		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
 		RandomAccessFile raf = new RandomAccessFile(file, "rb");
-		raf.seek(Constant.PAGESIZE*page.getIdx());
-		for(int i = 0 ; i < Constant.PAGESIZE  ; i++)
-			sb.append(raf.readByte());		
-		buffer = sb.toString();		
+		raf.seek(Constant.PAGESIZE * page.getIdx());
+		for (int i = 0; i < Constant.PAGESIZE; i++)
+			buffer.put(raf.readByte());
 	}
 
+	public static void writePage(PageId page, ByteBuffer buffer) throws IOException {
 
-	public static void writePage(PageId page, String buffer) throws IOException {
-																					
 		File file = new File("/BDD/Data_" + page.getIdx() + ".rf");
-		RandomAccessFile ecriturePage = new RandomAccessFile(file, "wb");
-		ecriturePage.seek(Constant.PAGESIZE * page.getIdx());
-		ecriturePage.writeBytes(buffer);
+		RandomAccessFile raf = new RandomAccessFile(file, "wb");
+		raf.seek(Constant.PAGESIZE * page.getIdx());
+		for (int i = 0 ; i < Constant.PAGESIZE ; i++){
+			raf.write(buffer.get(i));
+		}
 	}
 }

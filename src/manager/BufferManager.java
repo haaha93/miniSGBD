@@ -1,66 +1,67 @@
 package manager;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import constant.Constant;
 
-public class BufferManager{
-	
-	private static Frame [] frames;
-	
+public class BufferManager {
+
+	private static Frame[] frames;
+
 	public static void bufferManager() {
-		frames = new Frame [Constant.F];
+		frames = new Frame[Constant.F];
 		for (Frame f : frames)
 			f = new Frame();
 	}
-	
+
 	// Algo "clock" tourne a l'infini si pinCount == 1 pour chaque frame
-	public static String getPage(PageId pageToRead) throws IOException {
-		String s="";
+	public static ByteBuffer getPage(PageId pageToRead) throws IOException {
+		ByteBuffer buffer = ByteBuffer.allocate((int) Constant.PAGESIZE);
 		int i = 0;
 		boolean chosen = false;
-		
+
 		for (Frame f : frames) {
 			if (f.getPageId().equals(pageToRead))
 				return f.getBuffer();
 		}
-		
+
 		for (Frame f : frames) {
-			if (f.getPageId()==null) {
+			if (f.getPageId() == null) {
 				f.setPageId(pageToRead);
-				DiskManager.readPage(pageToRead, s);
-				f.setBuffer(s);
+				DiskManager.readPage(pageToRead, buffer);
+				f.setBuffer(buffer);
 				f.setPinCount(1);
-				return s;
+				return buffer;
 			}
 		}
-		
+
 		do {
-			if (frames[i].getPinCount()==0 && frames[i].getRefBit())
+			if (frames[i].getPinCount() == 0 && frames[i].getRefBit())
 				frames[i].setRefBit(false);
-			else if (frames[i].getPinCount()==0 && !frames[i].getRefBit())
-				chosen=true;
-			i=chosen?i:i+1;
-			i=i==Constant.F?0:i;
+			else if (frames[i].getPinCount() == 0 && !frames[i].getRefBit())
+				chosen = true;
+			i = chosen ? i : i + 1;
+			i = i == Constant.F ? 0 : i;
 		} while (!chosen);
-		
+
 		frames[i].setPageId(pageToRead);
-		DiskManager.readPage(pageToRead, s);
-		frames[i].setBuffer(s);
+		DiskManager.readPage(pageToRead, buffer);
+		frames[i].setBuffer(buffer);
 		frames[i].setPinCount(1);
-		
-		return s;
+
+		return buffer;
 	}
-	
-	public static PageId freePAge(PageId pageToFree,boolean isDirty) {
-		
+
+	public static PageId freePage(PageId pageToFree, boolean isDirty) {
+
 		for (Frame f : frames) {
 			if (f.getPageId().equals(pageToFree)) {
 				f.setDirty(isDirty);
 				f.setPinCount(0);
 				f.setRefBit(true);
 				return pageToFree;
-			}				
+			}
 		}
 		return null;
 	}

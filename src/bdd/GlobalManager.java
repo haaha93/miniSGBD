@@ -45,7 +45,7 @@ public class GlobalManager {
 	public static void createRelation(String[] userInput) throws IOException {
 		RelSchema relSchema = new RelSchema(userInput);
 		int sizeRecord = calculRecordSize(relSchema);
-		int slotCount = (int) (Constant.PAGESIZE / (8 * sizeRecord + 1));
+		int slotCount = (int) (Constant.PAGESIZE / (sizeRecord + 1));
 		db.addRelationToDB(relSchema, sizeRecord, slotCount);
 		HeapFile heapFile = new HeapFile(db.getListRelation().get(db.getListRelation().size() - 1));
 		heapFiles.set(db.getCompteurRel() - 1, heapFile);
