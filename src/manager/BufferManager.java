@@ -14,8 +14,15 @@ public class BufferManager {
 		for (Frame f : frames)
 			f = new Frame();
 	}
-
+	
+	
 	// Algo "clock" tourne a l'infini si pinCount == 1 pour chaque frame
+	/**
+	 * Fonction getPage puts a page to current frames if the clock algorithm allows it
+	 * @param pageToRead
+	 * @return
+	 * @throws IOException
+	 */
 	public static ByteBuffer getPage(PageId pageToRead) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate((int) Constant.PAGESIZE);
 		int i = 0;
