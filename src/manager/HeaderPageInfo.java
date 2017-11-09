@@ -1,5 +1,6 @@
 package manager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HeaderPageInfo {
@@ -21,11 +22,19 @@ public class HeaderPageInfo {
 		this.infos = infos;
 	}
 	public HeaderPageInfo(int nbPagesDeDonnees, List<Info> infos) {
-		super();
+		
 		this.nbPagesDeDonnees = nbPagesDeDonnees;
 		this.infos = infos;
 	}
 
+	public HeaderPageInfo() {
+		infos = new ArrayList<Info>();
+		nbPagesDeDonnees = 0;
+	}
+	
+	public void incrementNbPagesDeDonnees(int arg){
+		this.nbPagesDeDonnees+=arg;
+	}
 	
 	
 }

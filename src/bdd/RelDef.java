@@ -45,5 +45,23 @@ public class RelDef {
 	public void setPage(PageId page) {
 		this.page = page;
 	}
+
+	public int getRecordSize() {
+		return recordSize;
+	}
+
+	public void setRecordSize(int recordSize) {
+		this.recordSize = recordSize;
+	}
+
+	public int getSlotCount() {
+		return slotCount;
+	}
+
+	public void setSlotCount(int slotCount) {
+		this.slotCount = slotCount;
+	}
+	
+	
 	
 }

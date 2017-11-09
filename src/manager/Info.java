@@ -27,6 +27,9 @@ public class Info {
 		this.nbSlotsAvailable = nbSlotsAvailable;
 	}
 	
+	public void incrementerNbslotsAvailable(int arg){
+		this.nbSlotsAvailable+=arg;
+	}
 	
 	
 

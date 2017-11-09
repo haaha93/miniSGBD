@@ -59,11 +59,40 @@ public class HeapFile {
 		}
 
 	}
+
+	public void updateHeaderDataPage(PageId newPageId) throws IOException {
+		HeaderPageInfo hpi = new HeaderPageInfo();
+		PageId headerPage = new PageId(newPageId.getFileId(), 0);
+		ByteBuffer bufferHeader = BufferManager.getPage(headerPage);
+		readHeaderPageInfo(bufferHeader, hpi);
 	
-	public void updateHeaderDataPage(PageId pageId){
-		
+		hpi.incrementNbPagesDeDonnees(1);
+		hpi.getInfos().add(new Info(newPageId.getIdx(), this.relDef.getSlotCount()));
+		writeHeaderPageInfo(bufferHeader, hpi);
+		BufferManager.freePage(headerPage, true);
 	}
 	
+	public void updateHeaderTakenSlot(PageId pid) throws IOException{
+		HeaderPageInfo hpi = new HeaderPageInfo();
+		PageId headerPage = new PageId(pid.getFileId(), 0);
+		ByteBuffer bufferHeader = BufferManager.getPage(headerPage);
+		readHeaderPageInfo(bufferHeader, hpi);
+		
+		hpi.getInfos().get(pid.getIdx()).incrementerNbslotsAvailable(-1);
+		writeHeaderPageInfo(bufferHeader, hpi);
+		BufferManager.freePage(headerPage, true);
+	}
 	
+	public void readPageBitmapInfo(ByteBuffer buffer, PageBitmapInfo pbi){
+		int slot = this.relDef.getSlotCount();
+		for(int i =0; i < slot; i++)
+			pbi.setValueAtIndexOfSlotsStatus(i, buffer.get(i));
+	}
+	
+	public void writePageBitmapInfo(ByteBuffer buffer, PageBitmapInfo pbi){
+		int slot = this.relDef.getSlotCount();
+		for(int i =0; i < slot; i++)
+			buffer.put(i, pbi.getValueAtIndexOfSlotsStatus(i));
+	}
 
 }
