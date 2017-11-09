@@ -2,7 +2,9 @@ package manager;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.List;
 
+import bdd.Record;
 import bdd.RelDef;
 import constant.Constant;
 
@@ -93,6 +95,31 @@ public class HeapFile {
 		int slot = this.relDef.getSlotCount();
 		for(int i =0; i < slot; i++)
 			buffer.put(i, pbi.getValueAtIndexOfSlotsStatus(i));
+	}
+	
+	public void writeRecordInBuffer(Record record, ByteBuffer buffer, int offset){
+		List<String> typeColumns = this.relDef.getRelSchema().getTypeColumns();
+		String type;
+		int longueur = 0;
+		int recordSize = 0;
+
+		for (int i = 0; i < typeColumns.size(); i++) {
+			if (typeColumns.get(i).charAt(0) == 'S') {
+				type = typeColumns.get(i).substring(0, 6);
+				longueur = Integer.parseInt((typeColumns.get(i).substring(6)));
+			} else
+				type = typeColumns.get(i);
+
+			switch (type) {
+			case "int":
+			case "float":
+				recordSize += 4;
+				break;
+			case "String":
+				recordSize += 2 * longueur;
+				break;
+			}
+		}
 	}
 
 }
