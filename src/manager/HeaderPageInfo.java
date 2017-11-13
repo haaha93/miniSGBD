@@ -36,5 +36,12 @@ public class HeaderPageInfo {
 		this.nbPagesDeDonnees+=arg;
 	}
 	
+	public void addInfo(int idxPages, int nbSlotsAvailable) {
+		addInfo(new Info(idxPages,nbSlotsAvailable));
+	}
+	
+	public void addInfo(Info info) {
+		infos.add(info);
+	}
 	
 }

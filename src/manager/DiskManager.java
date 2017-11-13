@@ -35,9 +35,8 @@ public class DiskManager {
 		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
 		RandomAccessFile raf = new RandomAccessFile(file, "wb");
 		raf.seek(Constant.PAGESIZE * page.getIdx());
-
 		for (int i = 0; i < Constant.PAGESIZE; i++) {
-			raf.write('0');
+			raf.writeByte(0);
 		}
 
 		return (new PageId(page.getFileId(), page.getIdx() + 1));
@@ -59,7 +58,7 @@ public class DiskManager {
 		RandomAccessFile raf = new RandomAccessFile(file, "wb");
 		raf.seek(Constant.PAGESIZE * page.getIdx());
 		for (int i = 0 ; i < Constant.PAGESIZE ; i++){
-			raf.write(buffer.get(i));
+			raf.writeByte(buffer.get(i));
 		}
 	}
 }

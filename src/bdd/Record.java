@@ -24,5 +24,9 @@ public class Record {
 		this.values = record;
 
 	}
+	
+	public String getValueAtIndex(int index) {
+		return values.get(index);
+	}
 
 }
