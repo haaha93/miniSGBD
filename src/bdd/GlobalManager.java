@@ -16,13 +16,14 @@ import java.util.List;
 import constant.Constant;
 import manager.BufferManager;
 import manager.HeapFile;
+import manager.PageId;
 
 public class GlobalManager {
 
 	private static Dbdef db;
 	private static ArrayList<HeapFile> heapFiles;
 
-	public static void init() {
+	public static void init() throws IOException {
 		try {
 			File file = new File("Catalog.def");
 			FileInputStream fis = new FileInputStream(file);
@@ -38,6 +39,7 @@ public class GlobalManager {
 	}
 
 	/**
+	 * 
 	 * @param userInput
 	 *            , tab of String containing user's values. Add a relation in the
 	 *            database.
@@ -46,10 +48,13 @@ public class GlobalManager {
 		RelSchema relSchema = new RelSchema(userInput);
 		int sizeRecord = calculRecordSize(relSchema);
 		int slotCount = (int) (Constant.PAGESIZE / (sizeRecord + 1));
-		db.addRelationToDB(relSchema, sizeRecord, slotCount);
-		HeapFile heapFile = new HeapFile(db.getListRelation().get(db.getListRelation().size() - 1));
-		heapFiles.set(db.getCompteurRel() - 1, heapFile);
-		heapFiles.get(db.getCompteurRel() - 1).createHeader();
+		int index = db.getCompteurRel();
+		RelDef relDef = new RelDef(relSchema,index,sizeRecord,slotCount);
+		
+		db.addRelationToDBAtIndex(relDef, index);
+		HeapFile heapFile = new HeapFile(relDef);
+		heapFiles.add(index, heapFile);
+		heapFiles.get(index).createHeader();
 	}
 
 	/**
@@ -64,23 +69,36 @@ public class GlobalManager {
 		}
 	}
 
-	public static void refreshHeapFiles() {
-
-		for (int i = 0; i < db.getListRelation().size(); i++) {
-			if (!heapFiles.contains(db.getListRelation().get(i)))
-				heapFiles.add(new HeapFile(db.getListRelation().get(i)));
-
-		}
-
+	public static void refreshHeapFiles() throws IOException {
+		RelDef relDef;
+		RelSchema relSchema;
+		int sizeRecord;
+		
+		for (int i = 0; i < db.getListRelation().size(); i++) 
+			if (!heapFiles.contains(db.getListRelation().get(i))) {
+				relSchema = db.getListRelation().get(i).getRelSchema();
+				sizeRecord = calculRecordSize(relSchema);
+				relDef = new RelDef(relSchema,i,sizeRecord,Constant.PAGESIZE*(sizeRecord+1));
+				heapFiles.add(i,new HeapFile(relDef));
+				heapFiles.get(i).createHeader();
+			}
 	}
 
-	public static void insert(String name, String[] userInput) {
+	public static void insert(String name, String[] userInput) throws IOException {
 		Record record = new Record();
 		List<String> values = new ArrayList<>(userInput.length - 2);
+		int indexOfRelDef;
 		for (int i = 0; i < values.size(); i++)
 			values.set(i, userInput[i + 2]);
 
 		record.setValues(values);
+		
+		indexOfRelDef = db.getIndexOfRelSchemaByName(name);
+		if (indexOfRelDef!=-1)
+			heapFiles.get(indexOfRelDef).insertRecord(record);
+		
+		//TODO the else
+		
 	}
 
 	public static int calculRecordSize(RelSchema relSchema) {

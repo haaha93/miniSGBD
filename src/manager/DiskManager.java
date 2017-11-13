@@ -34,12 +34,12 @@ public class DiskManager {
 
 		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
 		RandomAccessFile raf = new RandomAccessFile(file, "wb");
-		raf.seek(Constant.PAGESIZE * page.getIdx());
+		double offset = raf.getFilePointer();
 		for (int i = 0; i < Constant.PAGESIZE; i++) {
-			raf.writeByte(0);
+			raf.writeByte((byte) 0);
 		}
 
-		return (new PageId(page.getFileId(), page.getIdx() + 1));
+		return (new PageId(page.getFileId(), (int) (offset+1)/Constant.PAGESIZE));
 
 	}
 

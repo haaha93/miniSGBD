@@ -27,6 +27,11 @@ public class Dbdef implements Serializable {
 		listRelation.add(new RelDef(relSchema, listRelation.size(),recordSize, slotCount));
 		compteurRel = listRelation.size();
 	}
+	
+	public void addRelationToDBAtIndex(RelDef relDef, int index) {
+		listRelation.add(index,relDef);
+		compteurRel = listRelation.size();
+	}
 
 	public List<RelDef> getListRelation() {
 		return listRelation;
@@ -61,6 +66,15 @@ public class Dbdef implements Serializable {
 				return rd.getRelSchema();
 
 		return null;
+	}
+	
+	public int getIndexOfRelSchemaByName(String name) {
+
+		for (int i = 0 ; i < listRelation.size() ; i++)
+			if (listRelation.get(i).getRelSchema().getName().equals(name))
+				return i;
+
+		return -1;
 	}
 
 }

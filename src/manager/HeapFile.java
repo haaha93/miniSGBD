@@ -16,16 +16,11 @@ public class HeapFile {
 		this.relDef = relDef;
 	}
 
-	// Le Header devra avoir un nom de fichier different des autres noms de
-	// fichier relations
 	public void createHeader() throws IOException {
-
-		ByteBuffer buffer = ByteBuffer.allocate(Constant.PAGESIZE);
-
-		DiskManager.addPage(relDef.getPage());
-		BufferManager.getPage(relDef.getPage());
-		DiskManager.writePage(relDef.getPage(), buffer);
-		BufferManager.freePage(relDef.getPage(), true);
+		
+		DiskManager.addPage(relDef.getHeaderPage());
+		BufferManager.getPage(relDef.getHeaderPage());
+		BufferManager.freePage(relDef.getHeaderPage(), true);
 
 	}
 
@@ -52,9 +47,9 @@ public class HeapFile {
 	public void getHeaderPageInfo(HeaderPageInfo hpi) {
 		ByteBuffer buffer;
 		try {
-			buffer = BufferManager.getPage(this.relDef.getPage());
+			buffer = BufferManager.getPage(this.relDef.getHeaderPage());
 			readHeaderPageInfo(buffer, hpi);
-			BufferManager.freePage(this.relDef.getPage(), false);
+			BufferManager.freePage(this.relDef.getHeaderPage(), false);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -63,7 +58,7 @@ public class HeapFile {
 
 	public void updateHeaderDataPage(PageId newPageId) throws IOException {
 		HeaderPageInfo hpi = new HeaderPageInfo();
-		PageId headerPage = this.relDef.getPage();
+		PageId headerPage = this.relDef.getHeaderPage();
 		ByteBuffer bufferHeader = BufferManager.getPage(headerPage);
 		readHeaderPageInfo(bufferHeader, hpi);
 		Info info = new Info(newPageId.getIdx(), this.relDef.getSlotCount());
@@ -128,10 +123,7 @@ public class HeapFile {
 
 	public PageId addDataPage() throws IOException {
 
-		HeaderPageInfo hpi = new HeaderPageInfo();
-		getHeaderPageInfo(hpi);
-
-		PageId pid = DiskManager.addPage(new PageId(this.relDef.getPage().getFileId(), hpi.getNbPagesDeDonnees()));
+		PageId pid = DiskManager.addPage(this.relDef.getHeaderPage());
 
 		updateHeaderDataPage(pid);
 
@@ -146,7 +138,7 @@ public class HeapFile {
 
 		for (Info i : hpi.getInfos())
 			if (i.getNbSlotsAvailable() > 0)
-				return new PageId(this.relDef.getPage().getFileId(), i.getIdxPages());
+				return new PageId(this.relDef.getHeaderPage().getFileId(), i.getIdxPages());
 
 		return addDataPage();
 
@@ -171,4 +163,8 @@ public class HeapFile {
 		
 	}
 
+	public void insertRecord(Record record) throws IOException {
+		PageId pid = getFreePage();
+		insertRecordInPage(record, pid);
+	}
 }
