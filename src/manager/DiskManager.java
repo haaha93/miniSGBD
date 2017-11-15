@@ -34,12 +34,16 @@ public class DiskManager {
 
 		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
 		RandomAccessFile raf = new RandomAccessFile(file, "wb");
-		double offset = raf.getFilePointer();
+		int idx = (int) (file.length()/Constant.PAGESIZE);
+		raf.seek(file.length());
+		
 		for (int i = 0; i < Constant.PAGESIZE; i++) {
 			raf.writeByte((byte) 0);
 		}
 
-		return (new PageId(page.getFileId(), (int) (offset+1)/Constant.PAGESIZE));
+		raf.close();
+		
+		return (new PageId(page.getFileId(), idx));
 
 	}
 
@@ -48,8 +52,11 @@ public class DiskManager {
 		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
 		RandomAccessFile raf = new RandomAccessFile(file, "rb");
 		raf.seek(Constant.PAGESIZE * page.getIdx());
+		
 		for (int i = 0; i < Constant.PAGESIZE; i++)
 			buffer.put(raf.readByte());
+		
+		raf.close();
 	}
 
 	public static void writePage(PageId page, ByteBuffer buffer) throws IOException {
@@ -57,8 +64,11 @@ public class DiskManager {
 		File file = new File("/BDD/Data_" + page.getIdx() + ".rf");
 		RandomAccessFile raf = new RandomAccessFile(file, "wb");
 		raf.seek(Constant.PAGESIZE * page.getIdx());
+		
 		for (int i = 0 ; i < Constant.PAGESIZE ; i++){
 			raf.writeByte(buffer.get(i));
 		}
+		
+		raf.close();
 	}
 }

@@ -66,6 +66,8 @@ public class HeapFile {
 		hpi.incrementNbPagesDeDonnees(1);
 		hpi.addInfo(info);
 		writeHeaderPageInfo(bufferHeader, hpi);
+		BufferManager.getPage(headerPage);
+		DiskManager.writePage(headerPage, bufferHeader);
 		BufferManager.freePage(headerPage, true);
 	}
 
@@ -76,7 +78,9 @@ public class HeapFile {
 		readHeaderPageInfo(bufferHeader, hpi);
 
 		hpi.getInfos().get(pid.getIdx()).incrementerNbslotsAvailable(-1);
-		writeHeaderPageInfo(bufferHeader, hpi);
+		writeHeaderPageInfo(bufferHeader, hpi);		
+		BufferManager.getPage(pid);
+		DiskManager.writePage(pid, bufferHeader);
 		BufferManager.freePage(headerPage, true);
 	}
 
@@ -90,6 +94,7 @@ public class HeapFile {
 		int slot = this.relDef.getSlotCount();
 		for (int i = 0; i < slot; i++)
 			buffer.put(i, pbi.getValueAtIndexOfSlotsStatus(i));
+		
 	}
 
 	public void writeRecordInBuffer(Record record, ByteBuffer buffer, int offset) {
@@ -154,9 +159,9 @@ public class HeapFile {
 		
 		writeRecordInBuffer(record, buffer, this.relDef.getSlotCount()+idx*this.relDef.getRecordSize());
 		
-		pbi.setValueAtIndexOfSlotsStatus(idx, (byte) 1);
-		
 		writePageBitmapInfo(buffer, pbi);
+		
+		pbi.setValueAtIndexOfSlotsStatus(idx, (byte) 1);
 		
 		BufferManager.freePage(pid, true);
 		
@@ -166,5 +171,6 @@ public class HeapFile {
 	public void insertRecord(Record record) throws IOException {
 		PageId pid = getFreePage();
 		insertRecordInPage(record, pid);
+		updateHeaderTakenSlot(pid);
 	}
 }

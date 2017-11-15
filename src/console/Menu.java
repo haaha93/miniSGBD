@@ -14,6 +14,8 @@ public class Menu {
 	 */
 	public static void console() throws IOException {
 
+		GlobalManager gm = new GlobalManager();
+		GlobalManager.init();
 		Scanner sc = new Scanner(System.in);
 		StringTokenizer st;
 		String[] rep;
@@ -35,6 +37,7 @@ public class Menu {
 			switch (rep[0]) {
 			case "help":
 				help();
+				break;
 			case "display":
 				GlobalManager.displayRelSchema();
 				break;
@@ -43,8 +46,14 @@ public class Menu {
 				break;
 			case "insert":
 				GlobalManager.insert(rep[1], rep);
+				break;
 			case "exit":
+				GlobalManager.finish();
 				System.out.println("Goodbye");
+				break;
+			case "fill":
+				GlobalManager.fill(rep);
+				break;
 			default:
 				System.out.println("Choice not existing");
 			}
@@ -61,7 +70,10 @@ public class Menu {
 		System.out.println("List and describ each command.");
 
 		System.out.println("\n\n\ncommand : \texit\n");
-		System.out.println("End the program.");
+		System.out.println("End the program.");		
+
+		System.out.println("\n\n\ncommand : \tdisplay\n");
+		System.out.println("Displays all relations.");
 
 		System.out.println("\n\n\ncommand : \tcreate RelName NbCol TypeCol[1] TypeCol[2] ... TypeCol[NbCol]\n");
 		System.out.println(
@@ -69,10 +81,11 @@ public class Menu {
 		
 		System.out.println("\n\n\ncommand : \tinsert RelName Val[1] Val[2] ... Val[NbCol]\n");
 		System.out.println(
-				"Insert a record of RelName relation with NbCol values of the relation");
+				"Insert a record of RelName relation with NbCol values of the relation");		
+
+		System.out.println("\n\n\ncommand : \tfill RelName FileName.cvs\n");
+		System.out.println("Add each record of file into relation.");
 		
-		System.out.println("\n\n\ncommand : \tdisplay\n");
-		System.out.println("Displays all relations.");
 	}
 
 	/**

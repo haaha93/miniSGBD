@@ -72,5 +72,11 @@ public class BufferManager {
 		}
 		return null;
 	}
+	
+	public static void flushAll() throws IOException {
+		for (Frame f : frames)
+			if (f.isDirty())
+				DiskManager.writePage(f.getPageId(), f.getBuffer());
+	}
 
 }
