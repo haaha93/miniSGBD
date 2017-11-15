@@ -32,43 +32,56 @@ public class DiskManager {
 																	// total de
 																	// pages
 
-		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
-		RandomAccessFile raf = new RandomAccessFile(file, "wb");
-		int idx = (int) (file.length()/Constant.PAGESIZE);
-		raf.seek(file.length());
-		
-		for (int i = 0; i < Constant.PAGESIZE; i++) {
-			raf.writeByte((byte) 0);
+		if (page != null) {
+
+			File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
+			RandomAccessFile raf = new RandomAccessFile(file, "wb");
+			int idx = (int) (file.length() / Constant.PAGESIZE);
+			raf.seek(file.length());
+
+			for (int i = 0; i < Constant.PAGESIZE; i++) {
+				raf.writeByte((byte) 0);
+			}
+
+			raf.close();
+
+			return (new PageId(page.getFileId(), idx));
 		}
 
-		raf.close();
-		
-		return (new PageId(page.getFileId(), idx));
+		return null;
 
 	}
 
 	public static void readPage(PageId page, ByteBuffer buffer) throws IOException {
 
-		File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
-		RandomAccessFile raf = new RandomAccessFile(file, "rb");
-		raf.seek(Constant.PAGESIZE * page.getIdx());
-		
-		for (int i = 0; i < Constant.PAGESIZE; i++)
-			buffer.put(raf.readByte());
-		
-		raf.close();
+		if (page != null) {
+
+			File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
+			RandomAccessFile raf = new RandomAccessFile(file, "rb");
+			raf.seek(Constant.PAGESIZE * page.getIdx());
+
+			for (int i = 0; i < Constant.PAGESIZE; i++)
+				buffer.put(raf.readByte());
+
+			raf.close();
+
+		}
 	}
 
 	public static void writePage(PageId page, ByteBuffer buffer) throws IOException {
 
-		File file = new File("/BDD/Data_" + page.getIdx() + ".rf");
-		RandomAccessFile raf = new RandomAccessFile(file, "wb");
-		raf.seek(Constant.PAGESIZE * page.getIdx());
-		
-		for (int i = 0 ; i < Constant.PAGESIZE ; i++){
-			raf.writeByte(buffer.get(i));
+		if (page != null) {
+
+			File file = new File("/BDD/Data_" + page.getIdx() + ".rf");
+			RandomAccessFile raf = new RandomAccessFile(file, "wb");
+			raf.seek(Constant.PAGESIZE * page.getIdx());
+
+			for (int i = 0; i < Constant.PAGESIZE; i++) {
+				raf.writeByte(buffer.get(i));
+			}
+
+			raf.close();
+
 		}
-		
-		raf.close();
 	}
 }

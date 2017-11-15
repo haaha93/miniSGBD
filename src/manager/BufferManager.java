@@ -8,17 +8,18 @@ import constant.Constant;
 public class BufferManager {
 
 	private static Frame[] frames;
-
+	
 	public static void bufferManager() {
 		frames = new Frame[Constant.F];
-		for (Frame f : frames)
+		for (Frame f : frames) 
 			f = new Frame();
 	}
-	
-	
+
 	// Algo "clock" tourne a l'infini si pinCount == 1 pour chaque frame
 	/**
-	 * Fonction getPage puts a page to current frames if the clock algorithm allows it
+	 * Fonction getPage puts a page to current frames if the clock algorithm allows
+	 * it
+	 * 
 	 * @param pageToRead
 	 * @return
 	 * @throws IOException
@@ -72,11 +73,13 @@ public class BufferManager {
 		}
 		return null;
 	}
-	
+
 	public static void flushAll() throws IOException {
-		for (Frame f : frames)
-			if (f.isDirty())
+
+		for (Frame f : frames) {
+			if (f != null && f.isDirty())
 				DiskManager.writePage(f.getPageId(), f.getBuffer());
+		}
 	}
 
 }

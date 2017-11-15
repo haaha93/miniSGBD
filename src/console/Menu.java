@@ -23,7 +23,7 @@ public class Menu {
 
 		do {
 
-			System.out.println("Enter your command line (help for list of commands");
+			System.out.println("Enter your command line (help for list of commands)");
 			st = new StringTokenizer(sc.nextLine());
 			rep = new String[st.countTokens()];
 			i = 0;
@@ -60,6 +60,9 @@ public class Menu {
 			case "select":
 				GlobalManager.select(rep);
 				break;
+			case "clean":
+				GlobalManager.clean();
+				break;
 			default:
 				System.out.println("Choice not existing");
 			}
@@ -80,6 +83,9 @@ public class Menu {
 
 		System.out.println("\n\n\ncommand : \tdisplay\n");
 		System.out.println("Displays all relations.");
+		
+		System.out.println("\n\n\ncommand : \tclean\n");
+		System.out.println("Delete all files of database and clear database.");
 
 		System.out.println("\n\n\ncommand : \tcreate RelName NbCol TypeCol[1] TypeCol[2] ... TypeCol[NbCol]\n");
 		System.out.println("Create a relation nammed RelName with NbCol columns and each columns has a type of int, float or stringT, T being the string length.");
