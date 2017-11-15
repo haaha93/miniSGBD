@@ -76,5 +76,10 @@ public class Dbdef implements Serializable {
 
 		return -1;
 	}
+	
+	public void clean() {
+		listRelation.clear();
+		compteurRel=0;
+	}
 
 }

@@ -44,4 +44,7 @@ public class HeaderPageInfo {
 		infos.add(info);
 	}
 	
+	public int getNbSlotsAvailableAt(int index) {
+		return infos.get(index).getNbSlotsAvailable();
+	}
 }

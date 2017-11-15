@@ -54,6 +54,12 @@ public class Menu {
 			case "fill":
 				GlobalManager.fill(rep);
 				break;
+			case "selectall":
+				GlobalManager.selectAll(rep[1]);
+				break;
+			case "select":
+				GlobalManager.select(rep);
+				break;
 			default:
 				System.out.println("Choice not existing");
 			}
@@ -76,16 +82,19 @@ public class Menu {
 		System.out.println("Displays all relations.");
 
 		System.out.println("\n\n\ncommand : \tcreate RelName NbCol TypeCol[1] TypeCol[2] ... TypeCol[NbCol]\n");
-		System.out.println(
-				"Create a relation nammed RelName with NbCol columns and each columns has a type of int, float or stringT, T being the string length.");
+		System.out.println("Create a relation nammed RelName with NbCol columns and each columns has a type of int, float or stringT, T being the string length.");
 		
 		System.out.println("\n\n\ncommand : \tinsert RelName Val[1] Val[2] ... Val[NbCol]\n");
-		System.out.println(
-				"Insert a record of RelName relation with NbCol values of the relation");		
+		System.out.println("Insert a record of RelName relation with NbCol values of the relation.");		
 
 		System.out.println("\n\n\ncommand : \tfill RelName FileName.cvs\n");
 		System.out.println("Add each record of file into relation.");
 		
+		System.out.println("\n\n\ncommand : \tselectall RelName\n");
+		System.out.println("Select each record of relation RelNam.");
+		
+		System.out.println("\n\n\ncommand : \tselect RelName IndexColumn V\n");
+		System.out.println("Select each record of relation RelNam with value V at column IndexColumn.");
 	}
 
 	/**

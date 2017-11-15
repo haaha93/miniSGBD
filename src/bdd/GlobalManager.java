@@ -23,7 +23,6 @@ public class GlobalManager {
 
 	private static Dbdef db;
 	private static ArrayList<HeapFile> heapFiles;
-	private static BufferManager bm = new BufferManager();
 
 	public static void init() throws IOException {
 		try {
@@ -142,11 +141,11 @@ public class GlobalManager {
 		}
 	}
 
-	public static void fill(String[] rep) throws IOException {
-		String relName = rep[1];
+	public static void fill(String[] userInput) throws IOException {
+		String relName = userInput[1];
 
-		if (rep[2].substring(rep[2].length() - 4).equals(".cvs")) {
-			File file = new File(rep[2]);
+		if (userInput[2].substring(userInput[2].length() - 4).equals(".cvs")) {
+			File file = new File(userInput[2]);
 			RandomAccessFile raf = new RandomAccessFile(file, "r");
 			int indexOfRelDef = db.getIndexOfRelSchemaByName(relName);
 			HeapFile hf = heapFiles.get(indexOfRelDef);
@@ -158,16 +157,42 @@ public class GlobalManager {
 			raf.seek(0);
 
 			for (s = raf.readLine(); !s.equals(""); s = raf.readLine()) {
-					st = new StringTokenizer(s,",");
-					while (st.hasMoreTokens())
-						values.add(st.nextToken());
-					record.setValues(values);
-					hf.insertRecord(record);
-					values.clear();					
+				st = new StringTokenizer(s, ",");
+				while (st.hasMoreTokens())
+					values.add(st.nextToken());
+				record.setValues(values);
+				hf.insertRecord(record);
+				values.clear();
 			}
 
 		}
 
+	}
+
+	public static void selectAll(String relName) throws IOException {
+		heapFiles.get(db.getIndexOfRelSchemaByName(relName)).printAllRecords();
+
+	}
+
+	public static void select(String[] userInput) throws IOException {
+
+		int index = db.getIndexOfRelSchemaByName(userInput[1]);
+		int indexColumn = Integer.parseInt(userInput[2]);
+		String value = userInput[3];
+
+		heapFiles.get(index).printAllRecordsWithFilter(indexColumn, value);
+	}
+	
+	public static void clean() {
+		File file = new File("Catalog.def");
+		file.delete();
+		for (HeapFile hp : heapFiles) {
+			file = new File("/BDD/Data_" + hp.getFileId() + ".rf");
+			file.delete();
+		}
+		
+		db.clean();
+		heapFiles.clear();
 	}
 
 }

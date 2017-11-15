@@ -29,4 +29,13 @@ public class Record {
 		return values.get(index);
 	}
 
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer("");
+		for (String s : values)
+			sb.append(s+", ");
+		return sb.substring(0, sb.length()-2);
+	}
+
+	
 }
