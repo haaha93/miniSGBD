@@ -2,6 +2,8 @@ package manager;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.NetworkChannel;
+import java.util.ArrayList;
 import java.util.List;
 
 import bdd.Record;
@@ -17,7 +19,7 @@ public class HeapFile {
 	}
 
 	public void createHeader() throws IOException {
-		
+
 		DiskManager.addPage(relDef.getHeaderPage());
 		BufferManager.getPage(relDef.getHeaderPage());
 		BufferManager.freePage(relDef.getHeaderPage(), true);
@@ -78,7 +80,7 @@ public class HeapFile {
 		readHeaderPageInfo(bufferHeader, hpi);
 
 		hpi.getInfos().get(pid.getIdx()).incrementerNbslotsAvailable(-1);
-		writeHeaderPageInfo(bufferHeader, hpi);		
+		writeHeaderPageInfo(bufferHeader, hpi);
 		BufferManager.getPage(pid);
 		DiskManager.writePage(pid, bufferHeader);
 		BufferManager.freePage(headerPage, true);
@@ -94,7 +96,7 @@ public class HeapFile {
 		int slot = this.relDef.getSlotCount();
 		for (int i = 0; i < slot; i++)
 			buffer.put(i, pbi.getValueAtIndexOfSlotsStatus(i));
-		
+
 	}
 
 	public void writeRecordInBuffer(Record record, ByteBuffer buffer, int offset) {
@@ -148,29 +150,62 @@ public class HeapFile {
 		return addDataPage();
 
 	}
-	
+
 	public void insertRecordInPage(Record record, PageId pid) throws IOException {
 		ByteBuffer buffer = BufferManager.getPage(pid);
 		PageBitmapInfo pbi = new PageBitmapInfo(this.relDef.getSlotCount());
 		readPageBitmapInfo(buffer, pbi);
 		int idx = 0;
-		
-		while (pbi.getValueAtIndexOfSlotsStatus(idx++)!=0);
-		
-		writeRecordInBuffer(record, buffer, this.relDef.getSlotCount()+idx*this.relDef.getRecordSize());
-		
+
+		while (pbi.getValueAtIndexOfSlotsStatus(idx++) != 0)
+			;
+
+		writeRecordInBuffer(record, buffer, this.relDef.getSlotCount() + idx * this.relDef.getRecordSize());
+
 		writePageBitmapInfo(buffer, pbi);
-		
+
 		pbi.setValueAtIndexOfSlotsStatus(idx, (byte) 1);
-		
+
 		BufferManager.freePage(pid, true);
-		
-		
+
 	}
 
 	public void insertRecord(Record record) throws IOException {
 		PageId pid = getFreePage();
 		insertRecordInPage(record, pid);
 		updateHeaderTakenSlot(pid);
+	}
+
+	public void readRecordFromBuffer(Record record, ByteBuffer buffer, int offset) {
+		List<String> typeColumns = this.relDef.getRelSchema().getTypeColumns();
+		List<String> values = new ArrayList<>();
+		String type;
+		StringBuffer sb = new StringBuffer("");
+		int longueur = 0;
+		buffer.position(offset);
+
+		for (int i = 0; i < typeColumns.size(); i++) {
+			
+
+			if (typeColumns.get(i).charAt(0) == 'S') {
+				type = typeColumns.get(i).substring(0, 6);
+				longueur = Integer.parseInt((typeColumns.get(i).substring(6)));
+			} else
+				type = typeColumns.get(i);
+
+			switch (type) {
+			case "int":
+				values.add(i,""+buffer.getInt()+"");
+			case "float":
+				values.add(i,""+buffer.getFloat()+"");
+				break;
+			case "String":
+				for (int j = 0; j < longueur; j++)
+					sb.append(buffer.getChar());
+				values.add(sb.toString());
+				sb = new StringBuffer("");
+				break;
+			}
+		}
 	}
 }
