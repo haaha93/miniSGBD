@@ -110,18 +110,19 @@ public class GlobalManager {
 		int recordSize = 0;
 
 		for (int i = 0; i < typeColumns.size(); i++) {
-			if (typeColumns.get(i).charAt(0) == 'S') {
+			if (typeColumns.get(i).charAt(0) == 'S' || typeColumns.get(i).charAt(0) == 's') {
 				type = typeColumns.get(i).substring(0, 6);
 				longueur = Integer.parseInt((typeColumns.get(i).substring(6)));
 			} else
 				type = typeColumns.get(i);
 
 			switch (type) {
-			case "int":
-			case "float":
+			case "int": case "Int": case "INT":
+				recordSize += 4;
+			case "float": case "Float": case "FLOAT":
 				recordSize += 4;
 				break;
-			case "String":
+			case "string": case "String" : case "STRING":
 				recordSize += 2 * longueur;
 				break;
 			}

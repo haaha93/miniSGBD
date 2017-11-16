@@ -26,44 +26,44 @@ public class HeapFile {
 		BufferManager.freePage(relDef.getHeaderPage(), true);
 
 	}
-	
+
 	public int getFileId() {
 		return this.relDef.getHeaderPage().getFileId();
 	}
-	
+
 	public int getIdx() {
 		return this.relDef.getHeaderPage().getIdx();
 	}
-	
+
 	public PageId getHeaderPage() {
 		return this.relDef.getHeaderPage();
 	}
-	
+
 	public int getSlotCount() {
 		return this.relDef.getSlotCount();
 	}
-	
+
 	public int getRecordSize() {
 		return this.relDef.getRecordSize();
 	}
-	
+
 	public RelDef getRelDef() {
 		return this.relDef;
 	}
-	
+
 	public RelSchema getRelSchema() {
 		return this.relDef.getRelSchema();
 	}
-	
+
 	public String getRelName() {
 		return this.relDef.getRelSchema().getName();
 	}
-	
+
 	public int getNbColumns() {
 		return this.relDef.getRelSchema().getNbColumns();
 	}
-	
-	public ArrayList<String> getTypeColumns(){
+
+	public ArrayList<String> getTypeColumns() {
 		return (ArrayList<String>) this.relDef.getRelSchema().getTypeColumns();
 	}
 
@@ -148,19 +148,19 @@ public class HeapFile {
 		for (int i = 0; i < getTypeColumns().size(); i++) {
 			recordValue = record.getValueAtIndex(i);
 
-			if (getTypeColumns().get(i).charAt(0) == 'S') {
+			if (getTypeColumns().get(i).charAt(0) == 'S' || getTypeColumns().get(i).charAt(0) == 's') {
 				type = getTypeColumns().get(i).substring(0, 6);
 				longueur = Integer.parseInt((getTypeColumns().get(i).substring(6)));
 			} else
 				type = getTypeColumns().get(i);
 
 			switch (type) {
-			case "int":
+			case "int": case "Int": case "INT":
 				buffer.putInt(Integer.parseInt(recordValue));
-			case "float":
+			case "float": case "Float": case "FLOAT":
 				buffer.putFloat(Float.parseFloat(recordValue));
 				break;
-			case "String":
+			case "string": case "String": case "STRING":
 				for (int j = 0; j < longueur; j++)
 					buffer.putChar(recordValue.charAt(j));
 				break;
@@ -224,21 +224,20 @@ public class HeapFile {
 		buffer.position(offset);
 
 		for (int i = 0; i < getTypeColumns().size(); i++) {
-			
 
-			if (getTypeColumns().get(i).charAt(0) == 'S') {
+			if (getTypeColumns().get(i).charAt(0) == 'S' || getTypeColumns().get(i).charAt(0) == 's') {
 				type = getTypeColumns().get(i).substring(0, 6);
 				longueur = Integer.parseInt((getTypeColumns().get(i).substring(6)));
 			} else
 				type = getTypeColumns().get(i);
 
 			switch (type) {
-			case "int":
-				values.add(i,""+buffer.getInt()+"");
-			case "float":
-				values.add(i,""+buffer.getFloat()+"");
+			case "int": case "Tnt": case "INT":
+				values.add(i, "" + buffer.getInt() + "");
+			case "float": case "Float": case "FLOAT":
+				values.add(i, "" + buffer.getFloat() + "");
 				break;
-			case "String":
+			case "string": case "String": case "STRING":
 				for (int j = 0; j < longueur; j++)
 					sb.append(buffer.getChar());
 				values.add(sb.toString());
@@ -246,10 +245,10 @@ public class HeapFile {
 				break;
 			}
 		}
-		
+
 		record.setValues(values);
 	}
-	
+
 	public void printAllRecords() throws IOException {
 		int recordCompt = 0;
 		HeaderPageInfo hpi = new HeaderPageInfo();
@@ -257,25 +256,25 @@ public class HeapFile {
 		PageBitmapInfo pbi = new PageBitmapInfo(getSlotCount());
 		Record record = new Record();
 		PageId pi = new PageId(getFileId(), 0);
-		
+
 		getHeaderPageInfo(hpi);
-		for (int i = 0 ; i < hpi.getNbPagesDeDonnees() ; i++)
-			if (hpi.getNbSlotsAvailableAt(i)<getSlotCount()) {
+		for (int i = 0; i < hpi.getNbPagesDeDonnees(); i++)
+			if (hpi.getNbSlotsAvailableAt(i) < getSlotCount()) {
 				pi.setIdx(i);
-				buffer=BufferManager.getPage(pi);
+				buffer = BufferManager.getPage(pi);
 				readPageBitmapInfo(buffer, pbi);
-				for (int j = 0; j < getSlotCount() ; j++)
-					if (pbi.getValueAtIndexOfSlotsStatus(j)==1) {
-						readRecordFromBuffer(record, buffer,  getSlotCount() + j*getRecordSize());
+				for (int j = 0; j < getSlotCount(); j++)
+					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
+						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
 						System.out.println(record);
 						recordCompt++;
 					}
 				BufferManager.freePage(pi, false);
 			}
-		System.out.println("Total records : "+recordCompt);
-		
+		System.out.println("Total records : " + recordCompt);
+
 	}
-	
+
 	public void printAllRecordsWithFilter(int indexColumn, String value) throws IOException {
 		int recordCompt = 0;
 		HeaderPageInfo hpi = new HeaderPageInfo();
@@ -283,16 +282,16 @@ public class HeapFile {
 		PageBitmapInfo pbi = new PageBitmapInfo(getSlotCount());
 		Record record = new Record();
 		PageId pi = new PageId(getFileId(), 0);
-		
+
 		getHeaderPageInfo(hpi);
-		for (int i = 0 ; i < hpi.getNbPagesDeDonnees() ; i++)
-			if (hpi.getNbSlotsAvailableAt(i)<getSlotCount()) {
+		for (int i = 0; i < hpi.getNbPagesDeDonnees(); i++)
+			if (hpi.getNbSlotsAvailableAt(i) < getSlotCount()) {
 				pi.setIdx(i);
-				buffer=BufferManager.getPage(pi);
+				buffer = BufferManager.getPage(pi);
 				readPageBitmapInfo(buffer, pbi);
-				for (int j = 0; j < getSlotCount() ; j++)
-					if (pbi.getValueAtIndexOfSlotsStatus(j)==1) {
-						readRecordFromBuffer(record, buffer,  getSlotCount() + j*getRecordSize());
+				for (int j = 0; j < getSlotCount(); j++)
+					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
+						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
 						if (record.getValueAtIndex(indexColumn).equals(value)) {
 							System.out.println(record);
 							recordCompt++;
@@ -300,11 +299,8 @@ public class HeapFile {
 					}
 				BufferManager.freePage(pi, false);
 			}
-		System.out.println("Total records : "+recordCompt);
-		
+		System.out.println("Total records : " + recordCompt);
+
 	}
-	
-	
-	
-	
+
 }

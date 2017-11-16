@@ -22,7 +22,7 @@ public class RelSchema {
 		typeColumns = new ArrayList<String>(nbColumns); // selection du type à
 														// faire
 		for (int i = 3; i < userInput.length; i++)
-			typeColumns.set(i-3,userInput[i]);
+			typeColumns.add(i-3,userInput[i]);
 	}
 
 	/**

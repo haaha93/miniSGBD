@@ -11,8 +11,8 @@ public class BufferManager {
 	
 	public static void bufferManager() {
 		frames = new Frame[Constant.F];
-		for (Frame f : frames) 
-			f = new Frame();
+		for (int i = 0 ; i < Constant.F ; i++) 
+			frames[i] = new Frame();
 	}
 
 	// Algo "clock" tourne a l'infini si pinCount == 1 pour chaque frame
@@ -77,7 +77,7 @@ public class BufferManager {
 	public static void flushAll() throws IOException {
 
 		for (Frame f : frames) {
-			if (f != null && f.isDirty())
+			if (f.isDirty())
 				DiskManager.writePage(f.getPageId(), f.getBuffer());
 		}
 	}
