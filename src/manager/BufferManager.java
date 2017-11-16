@@ -30,7 +30,7 @@ public class BufferManager {
 		boolean chosen = false;
 
 		for (Frame f : frames) {
-			if (f.getPageId().equals(pageToRead))
+			if (f.getPageId()!=null && f.getPageId().equals(pageToRead))
 				return f.getBuffer();
 		}
 

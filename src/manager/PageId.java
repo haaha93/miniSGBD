@@ -25,5 +25,9 @@ public class PageId {
 
 	public void setIdx(int idx) {
 		this.idx = idx;
-	}	
+	}
+	
+	public boolean equals(PageId pi) {
+		return (pi.fileId==fileId && pi.idx==idx);
+	}
 }
