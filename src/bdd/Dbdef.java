@@ -28,7 +28,7 @@ public class Dbdef implements Serializable {
 		compteurRel = listRelation.size();
 	}
 	
-	public void addRelationToDBAtIndex(RelDef relDef, int index) {
+	public void addRelationToDBAtIndex(int index, RelDef relDef) {
 		listRelation.add(index,relDef);
 		compteurRel = listRelation.size();
 	}

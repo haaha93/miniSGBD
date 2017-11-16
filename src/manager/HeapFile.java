@@ -20,10 +20,11 @@ public class HeapFile {
 	}
 
 	public void createHeader() throws IOException {
-
-		DiskManager.addPage(relDef.getHeaderPage());
-		BufferManager.getPage(relDef.getHeaderPage());
-		BufferManager.freePage(relDef.getHeaderPage(), true);
+		
+		DiskManager.createFile(getFileId());
+		DiskManager.addPage(getFileId());
+		BufferManager.getPage(getHeaderPage());
+		BufferManager.freePage(getHeaderPage(), true);
 
 	}
 
@@ -170,7 +171,7 @@ public class HeapFile {
 
 	public PageId addDataPage() throws IOException {
 
-		PageId pid = DiskManager.addPage(getHeaderPage());
+		PageId pid = DiskManager.addPage(getFileId());
 
 		updateHeaderDataPage(pid);
 

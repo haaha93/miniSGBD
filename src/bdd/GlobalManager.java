@@ -30,6 +30,8 @@ public class GlobalManager {
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			db = (Dbdef) ois.readObject();
+			ois.close();
+			fis.close();
 		} catch (IOException | ClassNotFoundException e) {
 			db = new Dbdef();
 		} finally {
@@ -52,7 +54,7 @@ public class GlobalManager {
 		int index = db.getCompteurRel();
 		RelDef relDef = new RelDef(relSchema, index, sizeRecord, slotCount);
 
-		db.addRelationToDBAtIndex(relDef, index);
+		db.addRelationToDBAtIndex(index, relDef);
 		HeapFile heapFile = new HeapFile(relDef);
 		heapFiles.add(index, heapFile);
 		heapFiles.get(index).createHeader();
@@ -188,7 +190,7 @@ public class GlobalManager {
 		File file = new File("Catalog.def");
 		file.delete();
 		for (HeapFile hp : heapFiles) {
-			file = new File("/BDD/Data_" + hp.getFileId() + ".rf");
+			file = new File("BDD"+File.separator+"Data_" + hp.getFileId() + ".rf");
 			file.delete();
 		}
 		

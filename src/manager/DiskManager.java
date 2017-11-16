@@ -9,33 +9,20 @@ import java.nio.ByteBuffer;
 import constant.Constant;
 
 public class DiskManager {
-	public static void createFile(int fileID) { // cree un fichier si non
+	public static void createFile(int fileID) throws IOException { // cree un fichier si non
 												// existant
-
-		File file = new File("/BDD/Data_" + fileID + ".rf");
-
-		try {
-			if (file.createNewFile()) {
-				System.out.println("File created");
-			} else {
-				System.out.println("File already exists.");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		File file = new File("BDD"+File.separator+"Data_" + fileID + ".rf");
+		file.createNewFile();
 	}
 
-	public static PageId addPage(PageId page) throws IOException { // ajoute une
+	public static PageId addPage(int fileID) throws IOException { // ajoute une
 																	// page au
 																	// nombre
 																	// total de
 																	// pages
 
-		if (page != null) {
-
-			File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
-			RandomAccessFile raf = new RandomAccessFile(file, "wb");
+			File file = new File("BDD"+File.separator+"Data_" + fileID + ".rf");
+			RandomAccessFile raf = new RandomAccessFile(file, "rw");
 			int idx = (int) (file.length() / Constant.PAGESIZE);
 			raf.seek(file.length());
 
@@ -45,10 +32,7 @@ public class DiskManager {
 
 			raf.close();
 
-			return (new PageId(page.getFileId(), idx));
-		}
-
-		return null;
+			return (new PageId(fileID, idx));
 
 	}
 
@@ -56,8 +40,8 @@ public class DiskManager {
 
 		if (page != null) {
 
-			File file = new File("/BDD/Data_" + page.getFileId() + ".rf");
-			RandomAccessFile raf = new RandomAccessFile(file, "rb");
+			File file = new File("BDD"+File.separator+"Data_" + page.getFileId() + ".rf");
+			RandomAccessFile raf = new RandomAccessFile(file, "r");
 			raf.seek(Constant.PAGESIZE * page.getIdx());
 
 			for (int i = 0; i < Constant.PAGESIZE; i++)
@@ -72,8 +56,8 @@ public class DiskManager {
 
 		if (page != null) {
 
-			File file = new File("/BDD/Data_" + page.getIdx() + ".rf");
-			RandomAccessFile raf = new RandomAccessFile(file, "wb");
+			File file = new File("BDD"+File.separator+"Data_" + page.getFileId() + ".rf");
+			RandomAccessFile raf = new RandomAccessFile(file, "rw");
 			raf.seek(Constant.PAGESIZE * page.getIdx());
 
 			for (int i = 0; i < Constant.PAGESIZE; i++) {
