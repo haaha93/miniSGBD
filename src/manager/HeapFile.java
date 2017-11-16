@@ -69,7 +69,8 @@ public class HeapFile {
 	}
 
 	public void readHeaderPageInfo(ByteBuffer buffer, HeaderPageInfo hpi) {
-		hpi.setNbPagesDeDonnees(buffer.getInt(0));
+		buffer.position(0);
+		hpi.setNbPagesDeDonnees(buffer.getInt());
 
 		for (int i = 0; i < hpi.getNbPagesDeDonnees(); i++) {
 			Info info = new Info(buffer.getInt(), buffer.getInt());
@@ -79,10 +80,13 @@ public class HeapFile {
 	}
 
 	public void writeHeaderPageInfo(ByteBuffer buffer, HeaderPageInfo hpi) {
-		buffer.putInt(0, hpi.getNbPagesDeDonnees());
+		buffer.position(0);
+		buffer.putInt(hpi.getNbPagesDeDonnees());
 
 		for (int i = 0; i < hpi.getNbPagesDeDonnees(); i++) {
 			Info info = hpi.getInfos().get(i);
+			System.out.println(buffer.position());//
+			System.out.println(buffer.limit());//
 			buffer.putInt(info.getIdxPages());
 			buffer.putInt(info.getNbSlotsAvailable());
 		}

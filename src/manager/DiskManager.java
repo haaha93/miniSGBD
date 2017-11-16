@@ -39,7 +39,8 @@ public class DiskManager {
 	public static void readPage(PageId page, ByteBuffer buffer) throws IOException {
 
 		if (page != null) {
-
+			
+			buffer.position(0);
 			File file = new File("BDD"+File.separator+"Data_" + page.getFileId() + ".rf");
 			RandomAccessFile raf = new RandomAccessFile(file, "r");
 			raf.seek(Constant.PAGESIZE * page.getIdx());
@@ -55,7 +56,8 @@ public class DiskManager {
 	public static void writePage(PageId page, ByteBuffer buffer) throws IOException {
 
 		if (page != null) {
-
+			
+			buffer.position(0);
 			File file = new File("BDD"+File.separator+"Data_" + page.getFileId() + ".rf");
 			RandomAccessFile raf = new RandomAccessFile(file, "rw");
 			raf.seek(Constant.PAGESIZE * page.getIdx());
