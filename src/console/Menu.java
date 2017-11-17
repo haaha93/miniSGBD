@@ -1,6 +1,5 @@
 package console;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -15,7 +14,6 @@ public class Menu {
 	 */
 	public static void console() throws IOException {
 
-		GlobalManager gm = new GlobalManager();
 		GlobalManager.init();
 		Scanner sc = new Scanner(System.in);
 		StringTokenizer st;

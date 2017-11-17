@@ -2,22 +2,18 @@ package bdd;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import constant.Constant;
 import manager.BufferManager;
 import manager.HeapFile;
-import manager.PageId;
 
 public class GlobalManager {
 
@@ -96,7 +92,7 @@ public class GlobalManager {
 		Record record = new Record();
 		List<String> values = new ArrayList<>(userInput.length - 2);
 		int indexOfRelDef;
-		for (int i = 0; i < values.size(); i++)
+		for (int i = 0; i < userInput.length - 2; i++)
 			values.add(i, userInput[i + 2]);
 
 		record.setValues(values);
@@ -177,6 +173,8 @@ public class GlobalManager {
 				hf.insertRecord(record);
 				values.clear();
 			}
+			
+			raf.close();
 
 		}
 

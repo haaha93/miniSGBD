@@ -2,14 +2,12 @@ package manager;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.NetworkChannel;
 import java.util.ArrayList;
 import java.util.List;
 
 import bdd.Record;
 import bdd.RelDef;
 import bdd.RelSchema;
-import constant.Constant;
 
 public class HeapFile {
 
@@ -85,8 +83,6 @@ public class HeapFile {
 
 		for (int i = 0; i < hpi.getNbPagesDeDonnees(); i++) {
 			Info info = hpi.getInfos().get(i);
-			System.out.println(buffer.position());//
-			System.out.println(buffer.limit());//
 			buffer.putInt(info.getIdxPages());
 			buffer.putInt(info.getNbSlotsAvailable());
 		}

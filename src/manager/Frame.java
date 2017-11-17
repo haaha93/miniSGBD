@@ -12,6 +12,7 @@ public class Frame {
 	private boolean dirty,	
 				refBit;
 	
+	@SuppressWarnings("static-access")
 	public Frame() {
 		buffer.allocate((int) Constant.PAGESIZE);
 		pageId = null;
