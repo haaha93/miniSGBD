@@ -16,7 +16,7 @@ public class RelSchema {
 	 *            columns and the type of each columns enter by user. put the
 	 *            informations of userInput in the instance.
 	 */
-	RelSchema(String[] userInput) {
+	public RelSchema(String[] userInput) {
 		name = userInput[1];
 		nbColumns = Integer.parseInt(userInput[2]);
 		typeColumns = new ArrayList<String>(nbColumns); // selection du type à

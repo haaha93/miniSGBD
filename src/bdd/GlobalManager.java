@@ -44,8 +44,8 @@ public class GlobalManager {
 	/**
 	 * 
 	 * @param userInput
-	 *            , tab of String containing user's values. Add a relation in the
-	 *            database.
+	 *            , tab of String containing user's values. Add a relation in
+	 *            the database.
 	 */
 	public static void createRelation(String[] userInput) throws IOException {
 		RelSchema relSchema = new RelSchema(userInput);
@@ -77,9 +77,13 @@ public class GlobalManager {
 		RelDef relDef;
 		RelSchema relSchema;
 		int sizeRecord;
+		List<RelDef> rd = new ArrayList<>();
+
+		for (int i = 0; i < heapFiles.size(); i++)
+			rd.add(i, heapFiles.get(i).getRelDef());
 
 		for (int i = 0; i < db.getListRelation().size(); i++)
-			if (!heapFiles.contains(db.getListRelation().get(i))) {
+			if (!rd.contains(db.getListRelation().get(i))) {
 				relSchema = db.getListRelation().get(i).getRelSchema();
 				sizeRecord = calculRecordSize(relSchema);
 				relDef = new RelDef(relSchema, i, sizeRecord, Constant.PAGESIZE * (sizeRecord + 1));
@@ -93,7 +97,7 @@ public class GlobalManager {
 		List<String> values = new ArrayList<>(userInput.length - 2);
 		int indexOfRelDef;
 		for (int i = 0; i < values.size(); i++)
-			values.set(i, userInput[i + 2]);
+			values.add(i, userInput[i + 2]);
 
 		record.setValues(values);
 
@@ -119,12 +123,18 @@ public class GlobalManager {
 				type = typeColumns.get(i);
 
 			switch (type) {
-			case "int": case "Int": case "INT":
+			case "int":
+			case "Int":
+			case "INT":
 				recordSize += 4;
-			case "float": case "Float": case "FLOAT":
+			case "float":
+			case "Float":
+			case "FLOAT":
 				recordSize += 4;
 				break;
-			case "string": case "String" : case "STRING":
+			case "string":
+			case "String":
+			case "STRING":
 				recordSize += 2 * longueur;
 				break;
 			}
@@ -185,15 +195,15 @@ public class GlobalManager {
 
 		heapFiles.get(index).printAllRecordsWithFilter(indexColumn, value);
 	}
-	
+
 	public static void clean() {
 		File file = new File("Catalog.def");
 		file.delete();
-		for (HeapFile hp : heapFiles) {
-			file = new File("BDD"+File.separator+"Data_" + hp.getFileId() + ".rf");
+		for (int i = 0; i < heapFiles.size(); i++) {
+			file = new File("BDD" + File.separator + "Data_" + i + ".rf");
 			file.delete();
 		}
-		
+
 		db.clean();
 		heapFiles.clear();
 	}

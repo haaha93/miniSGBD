@@ -22,14 +22,14 @@ public class Dbdef implements Serializable {
 		listRelation.add(new RelDef(userInput, listRelation.size()));
 		compteurRel = listRelation.size();
 	}
-	
+
 	public void addRelationToDB(RelSchema relSchema, int recordSize, int slotCount) {
-		listRelation.add(new RelDef(relSchema, listRelation.size(),recordSize, slotCount));
+		listRelation.add(new RelDef(relSchema, listRelation.size(), recordSize, slotCount));
 		compteurRel = listRelation.size();
 	}
-	
+
 	public void addRelationToDBAtIndex(int index, RelDef relDef) {
-		listRelation.add(index,relDef);
+		listRelation.add(index, relDef);
 		compteurRel = listRelation.size();
 	}
 
@@ -61,25 +61,25 @@ public class Dbdef implements Serializable {
 
 	public RelSchema getRelSchemaByName(String name) {
 
-		for (RelDef rd : listRelation)
-			if (rd.getRelSchema().getName().equals(name))
-				return rd.getRelSchema();
+		for (int i = 0 ; i < listRelation.size() ; i++)
+			if (listRelation.get(i).getRelSchema().getName().equals(name))
+				return listRelation.get(i).getRelSchema();
 
 		return null;
 	}
-	
+
 	public int getIndexOfRelSchemaByName(String name) {
 
-		for (int i = 0 ; i < listRelation.size() ; i++)
+		for (int i = 0; i < listRelation.size(); i++)
 			if (listRelation.get(i).getRelSchema().getName().equals(name))
 				return i;
 
 		return -1;
 	}
-	
+
 	public void clean() {
 		listRelation.clear();
-		compteurRel=0;
+		compteurRel = 0;
 	}
 
 }

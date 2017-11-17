@@ -29,17 +29,17 @@ public class BufferManager {
 		int i = 0;
 		boolean chosen = false;
 
-		for (Frame f : frames) {
-			if (f.getPageId()!=null && f.getPageId().equals(pageToRead))
-				return f.getBuffer();
+		for (int j = 0 ; j < frames.length ; j++ ) {
+			if (frames[j].getPageId()!=null && frames[j].getPageId().equals(pageToRead))
+				return frames[j].getBuffer();
 		}
 
-		for (Frame f : frames) {
-			if (f.getPageId() == null) {
-				f.setPageId(pageToRead);
+		for (int j = 0 ; j < frames.length ; j++) {
+			if (frames[j].getPageId() == null) {
+				frames[j].setPageId(pageToRead);
 				DiskManager.readPage(pageToRead, buffer);
-				f.setBuffer(buffer);
-				f.setPinCount(1);
+				frames[j].setBuffer(buffer);
+				frames[j].setPinCount(1);
 				return buffer;
 			}
 		}
@@ -63,11 +63,11 @@ public class BufferManager {
 
 	public static PageId freePage(PageId pageToFree, boolean isDirty) {
 
-		for (Frame f : frames) {
-			if (f.getPageId().equals(pageToFree)) {
-				f.setDirty(isDirty);
-				f.setPinCount(0);
-				f.setRefBit(true);
+		for (int i = 0 ; i < frames.length ; i++ ) {
+			if (frames[i].getPageId().equals(pageToFree)) {
+				frames[i].setDirty(isDirty);
+				frames[i].setPinCount(0);
+				frames[i].setRefBit(true);
 				return pageToFree;
 			}
 		}
@@ -76,9 +76,9 @@ public class BufferManager {
 
 	public static void flushAll() throws IOException {
 
-		for (Frame f : frames) {
-			if (f.isDirty())
-				DiskManager.writePage(f.getPageId(), f.getBuffer());
+		for (int i = 0 ; i < frames.length ; i++) {
+			if (frames[i].isDirty())
+				DiskManager.writePage(frames[i].getPageId(), frames[i].getBuffer());
 		}
 	}
 

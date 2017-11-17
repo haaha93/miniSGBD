@@ -20,7 +20,7 @@ public class HeapFile {
 	}
 
 	public void createHeader() throws IOException {
-		
+
 		DiskManager.createFile(getFileId());
 		DiskManager.addPage(getFileId());
 		BufferManager.getPage(getHeaderPage());
@@ -74,7 +74,7 @@ public class HeapFile {
 
 		for (int i = 0; i < hpi.getNbPagesDeDonnees(); i++) {
 			Info info = new Info(buffer.getInt(), buffer.getInt());
-			hpi.getInfos().set(i, info);
+			hpi.getInfos().add(i, info);
 		}
 
 	}
@@ -160,12 +160,18 @@ public class HeapFile {
 				type = getTypeColumns().get(i);
 
 			switch (type) {
-			case "int": case "Int": case "INT":
+			case "int":
+			case "Int":
+			case "INT":
 				buffer.putInt(Integer.parseInt(recordValue));
-			case "float": case "Float": case "FLOAT":
+			case "float":
+			case "Float":
+			case "FLOAT":
 				buffer.putFloat(Float.parseFloat(recordValue));
 				break;
-			case "string": case "String": case "STRING":
+			case "string":
+			case "String":
+			case "STRING":
 				for (int j = 0; j < longueur; j++)
 					buffer.putChar(recordValue.charAt(j));
 				break;
@@ -188,9 +194,9 @@ public class HeapFile {
 		HeaderPageInfo hpi = new HeaderPageInfo();
 		getHeaderPageInfo(hpi);
 
-		for (Info i : hpi.getInfos())
-			if (i.getNbSlotsAvailable() > 0)
-				return new PageId(getFileId(), i.getIdxPages());
+		for (int i = 0 ; i < hpi.getInfos().size() ; i++)
+			if (hpi.getInfos().get(i).getNbSlotsAvailable() > 0)
+				return new PageId(getFileId(), hpi.getInfos().get(i).getIdxPages());
 
 		return addDataPage();
 
@@ -237,12 +243,18 @@ public class HeapFile {
 				type = getTypeColumns().get(i);
 
 			switch (type) {
-			case "int": case "Tnt": case "INT":
+			case "int":
+			case "Tnt":
+			case "INT":
 				values.add(i, "" + buffer.getInt() + "");
-			case "float": case "Float": case "FLOAT":
+			case "float":
+			case "Float":
+			case "FLOAT":
 				values.add(i, "" + buffer.getFloat() + "");
 				break;
-			case "string": case "String": case "STRING":
+			case "string":
+			case "String":
+			case "STRING":
 				for (int j = 0; j < longueur; j++)
 					sb.append(buffer.getChar());
 				values.add(sb.toString());
