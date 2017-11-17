@@ -105,7 +105,7 @@ public class HeapFile {
 		PageId headerPage = getHeaderPage();
 		ByteBuffer bufferHeader = BufferManager.getPage(headerPage);
 		readHeaderPageInfo(bufferHeader, hpi);
-		Info info = new Info(getIdx(), getSlotCount());
+		Info info = new Info(newPageId.getIdx(), getSlotCount());
 
 		hpi.incrementNbPagesDeDonnees(1);
 		hpi.addInfo(info);
