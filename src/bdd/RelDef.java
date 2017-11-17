@@ -1,9 +1,15 @@
 package bdd;
 
+import java.io.Serializable;
+
 import manager.PageId;
 
-public class RelDef {
+public class RelDef implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private RelSchema relSchema;
 	private PageId headerPage;
 	private int recordSize;

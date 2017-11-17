@@ -1,6 +1,13 @@
 package manager;
 
-public class PageId {
+import java.io.Serializable;
+
+public class PageId implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int fileId, 
 				idx;	
 

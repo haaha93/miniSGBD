@@ -73,13 +73,8 @@ public class GlobalManager {
 		RelDef relDef;
 		RelSchema relSchema;
 		int sizeRecord;
-		List<RelDef> rd = new ArrayList<>();
 
-		for (int i = 0; i < heapFiles.size(); i++)
-			rd.add(i, heapFiles.get(i).getRelDef());
-
-		for (int i = 0; i < db.getListRelation().size(); i++)
-			if (!rd.contains(db.getListRelation().get(i))) {
+		for (int i = 0; i < db.getListRelation().size(); i++){
 				relSchema = db.getListRelation().get(i).getRelSchema();
 				sizeRecord = calculRecordSize(relSchema);
 				relDef = new RelDef(relSchema, i, sizeRecord, Constant.PAGESIZE * (sizeRecord + 1));
@@ -198,7 +193,7 @@ public class GlobalManager {
 		File file = new File("Catalog.def");
 		file.delete();
 		for (int i = 0; i < heapFiles.size(); i++) {
-			file = new File("BDD" + File.separator + "Data_" + i + ".rf");
+			 file = new File("BDD" + File.separator + "Data_" + i + ".rf");
 			file.delete();
 		}
 
