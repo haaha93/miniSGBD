@@ -129,8 +129,7 @@ public class HeapFile {
 	}
 
 	public void readPageBitmapInfo(ByteBuffer buffer, PageBitmapInfo pbi) {
-		int slot = this.relDef.getSlotCount();
-		for (int i = 0; i < slot; i++)
+		for (int i = 0; i < getSlotCount(); i++)
 			pbi.setValueAtIndexOfSlotsStatus(i, buffer.get(i));
 	}
 

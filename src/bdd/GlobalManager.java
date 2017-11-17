@@ -77,7 +77,7 @@ public class GlobalManager {
 		for (int i = 0; i < db.getListRelation().size(); i++){
 				relSchema = db.getListRelation().get(i).getRelSchema();
 				sizeRecord = calculRecordSize(relSchema);
-				relDef = new RelDef(relSchema, i, sizeRecord, Constant.PAGESIZE * (sizeRecord + 1));
+				relDef = new RelDef(relSchema, i, sizeRecord, Constant.PAGESIZE / (sizeRecord + 1));
 				heapFiles.add(i, new HeapFile(relDef));
 				heapFiles.get(i).createHeader();
 			}
