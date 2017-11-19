@@ -8,7 +8,6 @@ public class HeaderPageInfo {
 	private int nbPagesDeDonnees;
 	private List<Info> infos;
 	
-	
 	public int getNbPagesDeDonnees() {
 		return nbPagesDeDonnees;
 	}
@@ -29,7 +28,8 @@ public class HeaderPageInfo {
 
 	public HeaderPageInfo() {
 		infos = new ArrayList<Info>();
-		nbPagesDeDonnees = 0;
+		infos.add(new Info(0,0));
+		nbPagesDeDonnees = infos.size();
 	}
 	
 	public void incrementNbPagesDeDonnees(int arg){
@@ -46,5 +46,12 @@ public class HeaderPageInfo {
 	
 	public int getNbSlotsAvailableAt(int index) {
 		return infos.get(index).getNbSlotsAvailable();
+	}
+	public void addInfoAt(int i, Info info) {
+		infos.add(i,info);
+		nbPagesDeDonnees=infos.size();
+	}
+	public void incrementSlotAvailableAt(int i, int arg) {
+		infos.get(i).incrementerNbslotsAvailable(arg);		
 	}
 }

@@ -64,7 +64,7 @@ public class DiskManager {
 			raf.seek(Constant.PAGESIZE * page.getIdx());
 
 			for (int i = 0; i < Constant.PAGESIZE; i++) {
-				raf.writeByte(buffer.get(i));
+				raf.writeByte(buffer.get());
 			}
 
 			raf.close();

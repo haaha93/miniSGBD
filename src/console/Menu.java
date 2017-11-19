@@ -64,6 +64,7 @@ public class Menu {
 				break;
 			default:
 				System.out.println("Choice not existing");
+				break;
 			}
 
 		} while (!rep[0].equals("exit"));

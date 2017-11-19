@@ -54,6 +54,8 @@ public class GlobalManager {
 		HeapFile heapFile = new HeapFile(relDef);
 		heapFiles.add(index, heapFile);
 		heapFiles.get(index).createHeader();
+		
+		
 	}
 
 	/**
@@ -96,7 +98,8 @@ public class GlobalManager {
 		if (indexOfRelDef != -1)
 			heapFiles.get(indexOfRelDef).insertRecord(record);
 
-		// TODO the else
+		else
+			System.out.println("Relation \""+name+"\" does not exist");
 
 	}
 
@@ -118,6 +121,7 @@ public class GlobalManager {
 			case "Int":
 			case "INT":
 				recordSize += 4;
+				break;
 			case "float":
 			case "Float":
 			case "FLOAT":
