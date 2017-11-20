@@ -202,16 +202,20 @@ public class HeapFile {
 		ByteBuffer buffer = BufferManager.getPage(pid);
 		PageBitmapInfo pbi = new PageBitmapInfo(getSlotCount());
 		readPageBitmapInfo(buffer, pbi);
-		int idx = 0;
+		int idx = -1;
 
-		while (pbi.getValueAtIndexOfSlotsStatus(idx++) != 0)
+		while (pbi.getValueAtIndexOfSlotsStatus(++idx) != 0)
 			;
 
 		writeRecordInBuffer(record, buffer, getSlotCount() + idx * getRecordSize());
-
-		writePageBitmapInfo(buffer, pbi);
+		
+		BufferManager.getPage(pid);
 
 		pbi.setValueAtIndexOfSlotsStatus(idx, (byte) 1);
+		
+		writePageBitmapInfo(buffer, pbi);
+		
+		DiskManager.writePage(pid, buffer);
 
 		BufferManager.freePage(pid, true);
 
@@ -272,6 +276,7 @@ public class HeapFile {
 		PageId pi = new PageId(getFileId(), 0);
 
 		getHeaderPageInfo(hpi);
+		System.out.println("Nb pages de donnees :"+hpi.getNbPagesDeDonnees());//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 		for (int i = 1; i < hpi.getNbPagesDeDonnees(); i++)
 			if (hpi.getNbSlotsAvailableAt(i) < getSlotCount()) {
 				pi.setIdx(i);
