@@ -28,8 +28,7 @@ public class HeaderPageInfo {
 
 	public HeaderPageInfo() {
 		infos = new ArrayList<Info>();
-		infos.add(new Info(0,0));
-		nbPagesDeDonnees = infos.size();
+		nbPagesDeDonnees = 0;
 	}
 	
 	public void incrementNbPagesDeDonnees(int arg){
@@ -38,6 +37,7 @@ public class HeaderPageInfo {
 	
 	public void addInfo(int idxPages, int nbSlotsAvailable) {
 		addInfo(new Info(idxPages,nbSlotsAvailable));
+		nbPagesDeDonnees++;
 	}
 	
 	public void addInfo(Info info) {
@@ -54,4 +54,14 @@ public class HeaderPageInfo {
 	public void incrementSlotAvailableAt(int i, int arg) {
 		infos.get(i).incrementerNbslotsAvailable(arg);		
 	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		for (Info i : infos)
+			sb.append("idx : "+i.getIdxPages()+" nb slots available : "+i.getNbSlotsAvailable()+"\n");
+		return sb.toString();
+	}
+	
+	
 }

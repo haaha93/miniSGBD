@@ -81,7 +81,6 @@ public class GlobalManager {
 				sizeRecord = calculRecordSize(relSchema);
 				relDef = new RelDef(relSchema, i, sizeRecord, Constant.PAGESIZE / (sizeRecord + 1));
 				heapFiles.add(i, new HeapFile(relDef));
-				heapFiles.get(i).createHeader();
 			}
 	}
 
