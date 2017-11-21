@@ -59,6 +59,11 @@ public class Frame {
 
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
+	}
+
+	@Override
+	public String toString() {
+		return "Frame [pageId=" + pageId + ", pinCount=" + pinCount + ", dirty=" + dirty + ", refBit=" + refBit + "]";
 	}	
 	
 	

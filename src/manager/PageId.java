@@ -35,6 +35,15 @@ public class PageId implements Serializable {
 	}
 	
 	public boolean equals(PageId pi) {
-		return (pi.fileId==fileId && pi.idx==idx);
+		return (pi.fileId==this.fileId && pi.idx==this.idx);
 	}
+
+
+	@Override
+	public String toString() {
+		return "PageId [fileId=" + fileId + ", idx=" + idx + "]";
+	}
+	
+	
 }
+

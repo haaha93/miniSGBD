@@ -177,10 +177,10 @@ public class HeapFile {
 	public PageId addDataPage() throws IOException {
 
 		PageId pid = DiskManager.addPage(getFileId());
-		
+
 		BufferManager.getPage(pid);
 		BufferManager.freePage(pid, true);
-		
+
 		updateHeaderDataPage(pid);
 
 		return pid;
@@ -192,7 +192,7 @@ public class HeapFile {
 		HeaderPageInfo hpi = new HeaderPageInfo();
 		getHeaderPageInfo(hpi);
 
-		for (int i = 1 ; i < hpi.getNbPagesDeDonnees(); i++)
+		for (int i = 1; i < hpi.getNbPagesDeDonnees(); i++)
 			if (hpi.getInfos().get(i).getNbSlotsAvailable() > 0)
 				return new PageId(getFileId(), hpi.getInfos().get(i).getIdxPages());
 
@@ -286,13 +286,12 @@ public class HeapFile {
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
-						System.out.print(++recordCompt+". ");
+						System.out.print(++recordCompt + ". ");
 						System.out.println(record);
 					}
 				BufferManager.freePage(pi, false);
 			}
 		System.out.println("Total records : " + recordCompt);
-
 	}
 
 	public void printAllRecordsWithFilter(int indexColumn, String value) throws IOException {
@@ -312,8 +311,8 @@ public class HeapFile {
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
-						if (record.getValueAtIndex(indexColumn-1).equals(value)) {
-							System.out.print(++recordCompt+". ");
+						if (record.getValueAtIndex(indexColumn - 1).equals(value)) {
+							System.out.print(++recordCompt + ". ");
 							System.out.println(record);
 						}
 					}

@@ -142,44 +142,44 @@ public class GlobalManager {
 	public static void displayRelSchema() {
 		int i = 0;
 		for (RelDef r : db.getListRelation()) {
-			System.out.print(++i+". ");
+			System.out.print(++i + ". ");
 			r.getRelSchema().display();
 		}
 	}
 
-	public static void fill(String[] userInput) throws IOException {
-		String relName = userInput[1];
-		int indexOfRel = db.getIndexOfRelSchemaByName(relName);
-
-		if (indexOfRel == -1)
-			System.out.println("Relation does not exist");
-
-		else {
-			if (userInput[2].substring(userInput[2].length() - 4).equals(".csv")) {
-				File file = new File(userInput[2]);
-				RandomAccessFile raf = new RandomAccessFile(file, "r");
-				HeapFile hf = heapFiles.get(indexOfRel);
-				ArrayList<String> values = new ArrayList<>();
-				StringTokenizer st = new StringTokenizer("", ",");
-				String s = "";
-
-				raf.seek(0);
-
-				for (s = raf.readLine(); s != null; s = raf.readLine()) {
-					st = new StringTokenizer(s, ",");
-					while (st.hasMoreTokens())
-						values.add(st.nextToken());
-					hf.insertRecord(new Record(values));
-					values.clear();
-				}
-
-				raf.close();
-			}
-			
-			else 
-				System.out.println("Wrong file extension, must be \".csv\"");
-		}
-	}
+	 public static void fill(String[] userInput) throws IOException {
+	 String relName = userInput[1];
+	 int indexOfRel = db.getIndexOfRelSchemaByName(relName);
+	
+	 if (indexOfRel == -1)
+	 System.out.println("Relation does not exist");
+	
+	 else {
+	 if (userInput[2].substring(userInput[2].length() - 4).equals(".csv")) {
+	 File file = new File(userInput[2]);
+	 RandomAccessFile raf = new RandomAccessFile(file, "r");
+	 HeapFile hf = heapFiles.get(indexOfRel);
+	 ArrayList<String> values = new ArrayList<>();
+	 StringTokenizer st = new StringTokenizer("", ",");
+	 String s = "";
+	
+	 raf.seek(0);
+	
+	 for (s = raf.readLine(); s != null; s = raf.readLine()) {
+	 st = new StringTokenizer(s, ",");
+	 while (st.hasMoreTokens())
+	 values.add(st.nextToken());
+	 hf.insertRecord(new Record(values));
+	 values.clear();
+	 }
+	
+	 raf.close();
+	 }
+	
+	 else
+	 System.out.println("Wrong file extension, must be \".csv\"");
+	 }
+	 }
 
 	public static void selectAll(String relName) throws IOException {
 		int indexOfRel = db.getIndexOfRelSchemaByName(relName);

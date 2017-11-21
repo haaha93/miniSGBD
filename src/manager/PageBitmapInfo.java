@@ -1,5 +1,7 @@
 package manager;
 
+import java.util.Arrays;
+
 public class PageBitmapInfo {
 	byte[] slotStatus;
 
@@ -7,11 +9,11 @@ public class PageBitmapInfo {
 		super();
 		this.slotStatus = slotStatus;
 	}
-	
+
 	public PageBitmapInfo(int size) {
 		super();
 		slotStatus = new byte[size];
-		
+
 	}
 
 	public byte[] getSlotStatus() {
@@ -21,12 +23,18 @@ public class PageBitmapInfo {
 	public void setSlotStatus(byte[] slotStatus) {
 		this.slotStatus = slotStatus;
 	}
-	
-	public void setValueAtIndexOfSlotsStatus(int index, byte value){
-		slotStatus[index]=value;
+
+	public void setValueAtIndexOfSlotsStatus(int index, byte value) {
+		slotStatus[index] = value;
 	}
-	
-	public byte getValueAtIndexOfSlotsStatus(int index){
+
+	public byte getValueAtIndexOfSlotsStatus(int index) {
 		return slotStatus[index];
 	}
+
+	@Override
+	public String toString() {
+		return "PageBitmapInfo [slotStatus=" + Arrays.toString(slotStatus) + "]";
+	}
+
 }
