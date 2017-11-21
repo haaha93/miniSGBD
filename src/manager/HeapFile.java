@@ -167,8 +167,12 @@ public class HeapFile {
 			case "string":
 			case "String":
 			case "STRING":
+				if (recordValue.length()>=longueur)
 				for (int j = 0; j < longueur; j++)
 					buffer.putChar(recordValue.charAt(j));
+				else
+					for (int j = 0; j < recordValue.length(); j++)
+						buffer.putChar(recordValue.charAt(j));
 				break;
 			}
 		}
