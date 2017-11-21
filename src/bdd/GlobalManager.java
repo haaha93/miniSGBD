@@ -40,8 +40,8 @@ public class GlobalManager {
 	/**
 	 * 
 	 * @param userInput
-	 *            , tab of String containing user's values. Add a relation in
-	 *            the database.
+	 *            , tab of String containing user's values. Add a relation in the
+	 *            database.
 	 */
 	public static void createRelation(String[] userInput) throws IOException {
 		RelSchema relSchema = new RelSchema(userInput);
@@ -54,8 +54,7 @@ public class GlobalManager {
 		HeapFile heapFile = new HeapFile(relDef);
 		heapFiles.add(index, heapFile);
 		heapFiles.get(index).createHeader();
-		
-		
+
 	}
 
 	/**
@@ -76,12 +75,12 @@ public class GlobalManager {
 		RelSchema relSchema;
 		int sizeRecord;
 
-		for (int i = 0; i < db.getListRelation().size(); i++){
-				relSchema = db.getListRelation().get(i).getRelSchema();
-				sizeRecord = calculRecordSize(relSchema);
-				relDef = new RelDef(relSchema, i, sizeRecord, Constant.PAGESIZE / (sizeRecord + 1));
-				heapFiles.add(i, new HeapFile(relDef));
-			}
+		for (int i = 0; i < db.getListRelation().size(); i++) {
+			relSchema = db.getListRelation().get(i).getRelSchema();
+			sizeRecord = calculRecordSize(relSchema);
+			relDef = new RelDef(relSchema, i, sizeRecord, Constant.PAGESIZE / (sizeRecord + 1));
+			heapFiles.add(i, new HeapFile(relDef));
+		}
 	}
 
 	public static void insert(String name, String[] userInput) throws IOException {
@@ -98,7 +97,7 @@ public class GlobalManager {
 			heapFiles.get(indexOfRelDef).insertRecord(record);
 
 		else
-			System.out.println("Relation \""+name+"\" does not exist");
+			System.out.println("Relation \"" + name + "\" does not exist");
 
 	}
 
@@ -143,60 +142,73 @@ public class GlobalManager {
 	public static void displayRelSchema() {
 		int i = 0;
 		for (RelDef r : db.getListRelation()) {
-			System.out.print("Relation " + i++ + " : ");
+			System.out.print(++i+". ");
 			r.getRelSchema().display();
 		}
 	}
 
 	public static void fill(String[] userInput) throws IOException {
 		String relName = userInput[1];
+		int indexOfRel = db.getIndexOfRelSchemaByName(relName);
 
-		if (userInput[2].substring(userInput[2].length() - 4).equals(".cvs")) {
-			File file = new File(userInput[2]);
-			RandomAccessFile raf = new RandomAccessFile(file, "r");
-			int indexOfRelDef = db.getIndexOfRelSchemaByName(relName);
-			HeapFile hf = heapFiles.get(indexOfRelDef);
-			ArrayList<String> values = new ArrayList<>();
-			StringTokenizer st = new StringTokenizer("", ",");
-			String s = "";
-			Record record = new Record();
+		if (indexOfRel == -1)
+			System.out.println("Relation does not exist");
 
-			raf.seek(0);
+		else {
+			if (userInput[2].substring(userInput[2].length() - 4).equals(".csv")) {
+				File file = new File(userInput[2]);
+				RandomAccessFile raf = new RandomAccessFile(file, "r");
+				HeapFile hf = heapFiles.get(indexOfRel);
+				ArrayList<String> values = new ArrayList<>();
+				StringTokenizer st = new StringTokenizer("", ",");
+				String s = "";
 
-			for (s = raf.readLine(); !s.equals(""); s = raf.readLine()) {
-				st = new StringTokenizer(s, ",");
-				while (st.hasMoreTokens())
-					values.add(st.nextToken());
-				record.setValues(values);
-				hf.insertRecord(record);
-				values.clear();
+				raf.seek(0);
+
+				for (s = raf.readLine(); s != null; s = raf.readLine()) {
+					st = new StringTokenizer(s, ",");
+					while (st.hasMoreTokens())
+						values.add(st.nextToken());
+					hf.insertRecord(new Record(values));
+					values.clear();
+				}
+
+				raf.close();
 			}
 			
-			raf.close();
-
+			else 
+				System.out.println("Wrong file extension, must be \".csv\"");
 		}
-
 	}
 
 	public static void selectAll(String relName) throws IOException {
-		heapFiles.get(db.getIndexOfRelSchemaByName(relName)).printAllRecords();
+		int indexOfRel = db.getIndexOfRelSchemaByName(relName);
+		if (indexOfRel == -1)
+			System.out.println("Relation does not exist");
+		else
+			heapFiles.get(db.getIndexOfRelSchemaByName(relName)).printAllRecords();
 
 	}
 
 	public static void select(String[] userInput) throws IOException {
 
-		int index = db.getIndexOfRelSchemaByName(userInput[1]);
-		int indexColumn = Integer.parseInt(userInput[2]);
-		String value = userInput[3];
+		int indexOfRel = db.getIndexOfRelSchemaByName(userInput[1]);
 
-		heapFiles.get(index).printAllRecordsWithFilter(indexColumn, value);
+		if (indexOfRel == -1)
+			System.out.println("Relation does not exist");
+		else {
+			int indexColumn = Integer.parseInt(userInput[2]);
+			String value = userInput[3];
+
+			heapFiles.get(indexOfRel).printAllRecordsWithFilter(indexColumn, value);
+		}
 	}
 
 	public static void clean() {
 		File file = new File("Catalog.def");
 		file.delete();
 		for (int i = 0; i < heapFiles.size(); i++) {
-			 file = new File("BDD" + File.separator + "Data_" + i + ".rf");
+			file = new File("BDD" + File.separator + "Data_" + i + ".rf");
 			file.delete();
 		}
 

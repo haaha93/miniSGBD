@@ -177,7 +177,10 @@ public class HeapFile {
 	public PageId addDataPage() throws IOException {
 
 		PageId pid = DiskManager.addPage(getFileId());
-
+		
+		BufferManager.getPage(pid);
+		BufferManager.freePage(pid, true);
+		
 		updateHeaderDataPage(pid);
 
 		return pid;
@@ -189,7 +192,7 @@ public class HeapFile {
 		HeaderPageInfo hpi = new HeaderPageInfo();
 		getHeaderPageInfo(hpi);
 
-		for (int i = 0; i < hpi.getNbPagesDeDonnees(); i++)
+		for (int i = 1 ; i < hpi.getNbPagesDeDonnees(); i++)
 			if (hpi.getInfos().get(i).getNbSlotsAvailable() > 0)
 				return new PageId(getFileId(), hpi.getInfos().get(i).getIdxPages());
 
@@ -283,8 +286,8 @@ public class HeapFile {
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
+						System.out.print(++recordCompt+". ");
 						System.out.println(record);
-						recordCompt++;
 					}
 				BufferManager.freePage(pi, false);
 			}
@@ -310,8 +313,8 @@ public class HeapFile {
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
 						if (record.getValueAtIndex(indexColumn-1).equals(value)) {
+							System.out.print(++recordCompt+". ");
 							System.out.println(record);
-							recordCompt++;
 						}
 					}
 				BufferManager.freePage(pi, false);

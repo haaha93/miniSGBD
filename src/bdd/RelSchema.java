@@ -34,7 +34,7 @@ public class RelSchema implements Serializable{
 	 * Display of the relation.
 	 */
 	public void display() {
-		System.out.print("name : " + name + ", number of columns : " + nbColumns + ", type of columns : ");
+		System.out.print("name : " + name + ", nb of columns : " + nbColumns + ", type of columns : ");
 		for (String s : typeColumns)
 			System.out.print(s + " ");
 		System.out.println();
