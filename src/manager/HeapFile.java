@@ -309,7 +309,7 @@ public class HeapFile {
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
-						if (record.getValueAtIndex(indexColumn).equals(value)) {
+						if (record.getValueAtIndex(indexColumn-1).equals(value)) {
 							System.out.println(record);
 							recordCompt++;
 						}
