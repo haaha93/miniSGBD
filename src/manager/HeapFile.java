@@ -315,7 +315,7 @@ public class HeapFile {
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
-						if (record.getValueAtIndex(indexColumn - 1).equals(value)) {
+						if (record.getValueAtIndex(indexColumn - 1).trim().equals(value)) {
 							System.out.print(++recordCompt + ". ");
 							System.out.println(record);
 						}
