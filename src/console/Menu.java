@@ -62,6 +62,8 @@ public class Menu {
 			case "clean":
 				GlobalManager.clean();
 				break;
+			case "join":
+				GlobalManager.join(rep[1], rep[2], Integer.parseInt(rep[3]), Integer.parseInt(rep[4]));
 			default:
 				System.out.println("Choice not existing");
 				break;

@@ -1,8 +1,8 @@
 package manager;
 
+import java.util.ArrayList;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 import bdd.Record;
@@ -167,9 +167,9 @@ public class HeapFile {
 			case "string":
 			case "String":
 			case "STRING":
-				if (recordValue.length()>=longueur)
-				for (int j = 0; j < longueur; j++)
-					buffer.putChar(recordValue.charAt(j));
+				if (recordValue.length() >= longueur)
+					for (int j = 0; j < longueur; j++)
+						buffer.putChar(recordValue.charAt(j));
 				else
 					for (int j = 0; j < recordValue.length(); j++)
 						buffer.putChar(recordValue.charAt(j));
@@ -323,6 +323,70 @@ public class HeapFile {
 				BufferManager.freePage(pi, false);
 			}
 		System.out.println("Total records : " + recordCompt);
+
+	}
+
+	public void joinPON(HeapFile hp2, int indexRel1, int indexRel2) throws IOException {
+
+		int recordCompt = 0;
+		HeaderPageInfo hpi = new HeaderPageInfo();
+		ByteBuffer buffer;
+		PageBitmapInfo pbi = new PageBitmapInfo(getSlotCount());
+		List<Record> record = new ArrayList<Record>();
+		PageId pi = new PageId(getFileId(), 0);
+
+		getHeaderPageInfo(hpi);
+
+		for (int i = 1; i < hpi.getNbPagesDeDonnees(); i++) {// pr l'instant
+																// j'ai mis que
+																// les record de
+																// hp1, j'ai pas
+																// pigé ce que
+																// tu veux que
+																// jfasse
+			if (hpi.getNbSlotsAvailableAt(i) < getSlotCount()) {
+				pi.setIdx(i);
+				buffer = BufferManager.getPage(pi);
+				readPageBitmapInfo(buffer, pbi);
+				for (int j = 0; j < getSlotCount(); j++)
+					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
+						readRecordFromBuffer(record.get(j), buffer, getSlotCount() + j * getRecordSize());
+					}
+				BufferManager.freePage(pi, false);
+			}
+		}
+
+		HeaderPageInfo hpi2 = new HeaderPageInfo();
+		hp2.getHeaderPageInfo(hpi2);
+		PageBitmapInfo pbi2 = new PageBitmapInfo(getSlotCount());
+		List<Record> record2 = new ArrayList<Record>();
+		PageId pi2 = new PageId(hp2.getFileId(), 0);
+
+		for (int i = 1; i < hpi2.getNbPagesDeDonnees(); i++) {// pr l'instant
+			// j'ai mis que
+			// les record de
+			// hp1, j'ai pas
+			// pigé ce que
+			// tu veux que
+			// jfasse
+			if (hpi2.getNbSlotsAvailableAt(i) < getSlotCount()) {
+				pi2.setIdx(i);
+				buffer = BufferManager.getPage(pi2);
+				readPageBitmapInfo(buffer, pbi2);
+				for (int j = 0; j < getSlotCount(); j++)
+					if (pbi2.getValueAtIndexOfSlotsStatus(j) == 1) {
+						readRecordFromBuffer(record2.get(j), buffer, getSlotCount() + j * getRecordSize());
+					}
+				BufferManager.freePage(pi, false);
+			}
+		}
+		
+		for(int i = 0; i < record.size(); i++){
+			for(int j = 0; i < record2.size(); j++){
+				if(record.contains(record2.get(j)))
+					System.out.println(record.toString() + "  "+record2.toString());
+			}	
+		}
 
 	}
 

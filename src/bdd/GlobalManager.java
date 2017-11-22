@@ -215,5 +215,11 @@ public class GlobalManager {
 		db.clean();
 		heapFiles.clear();
 	}
+	public static void join(String rel1, String rel2, int indexRel1, int indexRel2) throws IOException{
+		HeapFile hp1 = heapFiles.get(db.getIndexOfRelSchemaByName(rel1));
+		HeapFile hp2 = heapFiles.get(db.getIndexOfRelSchemaByName(rel2));
+		hp1.joinPON(hp2, indexRel1, indexRel2);
+	}
+	
 
 }
