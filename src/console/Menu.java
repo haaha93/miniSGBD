@@ -15,20 +15,18 @@ public class Menu {
 	public static void console() throws IOException {
 
 		GlobalManager.init();
-		Scanner sc = new Scanner(System.in);
-		StringTokenizer st;
 		String[] rep;
-		int i;
-
+		Scanner sc = new Scanner(System.in);
+		
 		do {
 
 			System.out.println("Enter your command line (help for list of commands)");
-			st = new StringTokenizer(sc.nextLine());
+			
+			StringTokenizer st = new StringTokenizer(sc.nextLine());
 			rep = new String[st.countTokens()];
-			i = 0;
+			int i = 0;
 
 			while (st.hasMoreTokens()) {
-
 				rep[i++] = st.nextToken();
 
 			}
@@ -63,13 +61,15 @@ public class Menu {
 				GlobalManager.clean();
 				break;
 			case "join":
-				GlobalManager.join(rep[1], rep[2], Integer.parseInt(rep[3]), Integer.parseInt(rep[4]));
+				GlobalManager.join(rep);
 			default:
 				System.out.println("Choice not existing");
 				break;
 			}
+			
 
 		} while (!rep[0].equals("exit"));
+		
 		sc.close();
 	}
 
@@ -103,6 +103,9 @@ public class Menu {
 		
 		System.out.println("\n\n\ncommand : \tselect RelName IndexColumn V\n");
 		System.out.println("Select each record of relation RelNam with value V at column IndexColumn.");
+		
+		System.out.println("\n\n\ncommand : \tjoin RelName1 RelName2 IndexColumnR1 IndexColumnR2\n");
+		System.out.println("Select each record of relation RelNam1 and RelName2 with common value between column IndexColumnR1 and IndexColumnR2 .");
 	}
 
 	/**
