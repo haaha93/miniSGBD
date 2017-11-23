@@ -1,4 +1,6 @@
-/constant/
-/minisgbd/
-/manager/
+/bdd/
 /console/
+/constant/
+/manager/
+/minisgbd/
+/index/
