@@ -62,6 +62,7 @@ public class Menu {
 				break;
 			case "join":
 				GlobalManager.join(rep);
+				break;
 			default:
 				System.out.println("Choice not existing");
 				break;

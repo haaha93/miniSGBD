@@ -182,9 +182,6 @@ public class HeapFile {
 
 		PageId pid = DiskManager.addPage(getFileId());
 
-		BufferManager.getPage(pid);
-		BufferManager.freePage(pid, true);
-
 		updateHeaderDataPage(pid);
 
 		return pid;
@@ -332,25 +329,20 @@ public class HeapFile {
 		HeaderPageInfo hpi = new HeaderPageInfo();
 		ByteBuffer buffer;
 		PageBitmapInfo pbi = new PageBitmapInfo(getSlotCount());
-		List<Record> record = new ArrayList<Record>();
+		List<Record> records = new ArrayList<Record>();
 		PageId pi = new PageId(getFileId(), 0);
 
 		getHeaderPageInfo(hpi);
 
-		for (int i = 1; i < hpi.getNbPagesDeDonnees(); i++) {// pr l'instant
-																// j'ai mis que
-																// les record de
-																// hp1, j'ai pas
-																// pigé ce que
-																// tu veux que
-																// jfasse
+		for (int i = 1; i < hpi.getNbPagesDeDonnees(); i++) {
 			if (hpi.getNbSlotsAvailableAt(i) < getSlotCount()) {
 				pi.setIdx(i);
 				buffer = BufferManager.getPage(pi);
 				readPageBitmapInfo(buffer, pbi);
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
-						readRecordFromBuffer(record.get(j), buffer, getSlotCount() + j * getRecordSize());
+						records.add(j, new Record());
+						readRecordFromBuffer(records.get(j), buffer, getSlotCount() + j * getRecordSize());
 					}
 				BufferManager.freePage(pi, false);
 			}
@@ -359,35 +351,32 @@ public class HeapFile {
 		HeaderPageInfo hpi2 = new HeaderPageInfo();
 		hp2.getHeaderPageInfo(hpi2);
 		PageBitmapInfo pbi2 = new PageBitmapInfo(getSlotCount());
-		List<Record> record2 = new ArrayList<Record>();
+		List<Record> records2 = new ArrayList<Record>();
 		PageId pi2 = new PageId(hp2.getFileId(), 0);
 
-		for (int i = 1; i < hpi2.getNbPagesDeDonnees(); i++) {// pr l'instant
-			// j'ai mis que
-			// les record de
-			// hp1, j'ai pas
-			// pigé ce que
-			// tu veux que
-			// jfasse
+		for (int i = 1; i < hpi2.getNbPagesDeDonnees(); i++) {
 			if (hpi2.getNbSlotsAvailableAt(i) < getSlotCount()) {
 				pi2.setIdx(i);
 				buffer = BufferManager.getPage(pi2);
 				readPageBitmapInfo(buffer, pbi2);
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi2.getValueAtIndexOfSlotsStatus(j) == 1) {
-						readRecordFromBuffer(record2.get(j), buffer, getSlotCount() + j * getRecordSize());
+						records2.add(j, new Record());
+						readRecordFromBuffer(records2.get(j), buffer, getSlotCount() + j * getRecordSize());
 					}
 				BufferManager.freePage(pi, false);
 			}
 		}
-		
-		for(int i = 0; i < record.size(); i++){
-			for(int j = 0; i < record2.size(); j++){
-				if(record.contains(record2.get(j)))
-					System.out.println(record.toString() + "  "+record2.toString());
-			}	
-		}
 
+		for (int i = 0; i < records.size() ; i++) {
+			for (int j = 0; j < records2.size() ; j++) {
+				if (records.get(i).getValueAtIndex(indexRel1 - 1).equals(records2.get(j).getValueAtIndex(indexRel2 - 1))) {
+				
+					System.out.println("Join Result: "+ records.get(i).toString()+" "+records2.get(j).toString());
+				}
+			}
+
+		}
 	}
 
 }
