@@ -7,9 +7,8 @@ public class Entry {
 	private String value;
 	private List<Rid> rids;
 
-	public Entry(String value, List<Rid> rids) {
+	public Entry(String value) {
 		this.value = value;
-		this.rids = rids;
 		if (this.rids == null)
 			this.rids = new ArrayList<Rid>();
 	}

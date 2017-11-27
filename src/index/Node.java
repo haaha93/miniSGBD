@@ -16,9 +16,9 @@ public class Node {
 		this.rightBrother = rightBrother;
 		this.father = father;
 		if (this.entries==null)
-			entries = new Entry[d];
+			entries = new Entry[2*d];
 		if (this.sons==null)
-			this.sons= new Node[d];
+			this.sons= new Node[2*d+1];
 	}
 	
 	public Node(int d) {
@@ -37,7 +37,7 @@ public class Node {
 		this.entries = entries;
 	}
 	
-	public void setEntries(int i, Entry entry) {
+	public void setEntry(int i, Entry entry) {
 		this.entries[i] = entry;
 	}
 
