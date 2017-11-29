@@ -8,13 +8,22 @@ import java.util.List;
 import bdd.Record;
 import bdd.RelDef;
 import bdd.RelSchema;
+import constant.Constant;
+import index.Btree;
+import index.Entry;
+import index.Node;
+import index.Rid;
 
 public class HeapFile {
 
 	private RelDef relDef;
+	private List<Btree> btrees;
 
 	public HeapFile(RelDef relDef) {
 		this.relDef = relDef;
+		btrees = new ArrayList<Btree>();
+		for (int i = 0; i < getTypeColumns().size(); i++)
+			btrees.add(i, new Btree(i, 1));
 	}
 
 	public int getFileId() {
@@ -149,7 +158,11 @@ public class HeapFile {
 
 			if (getTypeColumns().get(i).charAt(0) == 'S' || getTypeColumns().get(i).charAt(0) == 's') {
 				type = getTypeColumns().get(i).substring(0, 6);
-				longueur = Integer.parseInt((getTypeColumns().get(i).substring(6)));
+				try {
+					longueur = Integer.parseInt(getTypeColumns().get(i).substring(6));
+				} catch (NumberFormatException nfe) {
+					longueur = Constant.STRINGSIZE;
+				}
 			} else
 				type = getTypeColumns().get(i);
 
@@ -241,7 +254,11 @@ public class HeapFile {
 
 			if (getTypeColumns().get(i).charAt(0) == 'S' || getTypeColumns().get(i).charAt(0) == 's') {
 				type = getTypeColumns().get(i).substring(0, 6);
-				longueur = Integer.parseInt((getTypeColumns().get(i).substring(6)));
+				try {
+					longueur = Integer.parseInt(getTypeColumns().get(i).substring(6));
+				} catch (NumberFormatException nfe) {
+					longueur = Constant.STRINGSIZE;
+				}
 			} else
 				type = getTypeColumns().get(i);
 
@@ -368,15 +385,114 @@ public class HeapFile {
 			}
 		}
 
-		for (int i = 0; i < records.size() ; i++) {
-			for (int j = 0; j < records2.size() ; j++) {
-				if (records.get(i).getValueAtIndex(indexRel1 - 1).equals(records2.get(j).getValueAtIndex(indexRel2 - 1))) {
-				
-					System.out.println("Join Result: "+ records.get(i).toString()+" "+records2.get(j).toString());
+		for (int i = 0; i < records.size(); i++) {
+			for (int j = 0; j < records2.size(); j++) {
+				if (records.get(i).getValueAtIndex(indexRel1 - 1)
+						.equals(records2.get(j).getValueAtIndex(indexRel2 - 1))) {
+
+					System.out.println("Join Result: " + records.get(i).toString() + " " + records2.get(j).toString());
 				}
 			}
 
 		}
+	}
+
+	public void createIndex(int d, int key) throws IOException {
+		btrees.add(key, new Btree(d, key));
+		HeaderPageInfo hpi = new HeaderPageInfo();
+		ByteBuffer buffer;
+		PageBitmapInfo pbi = new PageBitmapInfo(getSlotCount());
+		Record record = new Record();
+		PageId pi = new PageId(getFileId(), 0);
+		getHeaderPageInfo(hpi);
+
+		for (int i = 1; i < hpi.getNbPagesDeDonnees(); i++)
+			if (hpi.getNbSlotsAvailableAt(i) < getSlotCount()) {
+				pi.setIdx(i);
+				buffer = BufferManager.getPage(pi);
+				readPageBitmapInfo(buffer, pbi);
+				for (int j = 0; j < getSlotCount(); j++)
+					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
+						int offset = getSlotCount() + j * getRecordSize();
+						readRecordFromBuffer(record, buffer, offset);
+						String value = record.getValueAtIndex(key);
+						Entry entry = btrees.get(key).findEntry(value);
+						if (entry == null || entry.getValue() == null)
+							btrees.get(key).insertEntry(new Entry(value, new Rid(i, offset)));
+						else
+							entry.addRid(new Rid(i, offset));
+					}
+				BufferManager.freePage(pi, false);
+			}
+	}
+
+	// for testing b+tree
+	public void display() {
+		System.out.println(btrees.get(1));
+	}
+
+	public void selectIndex(int key, String value) throws IOException {
+		Entry entry = btrees.get(key).findEntry(value);
+		int recordCompt = 0;
+
+		for (Rid r : entry.getRids()) {
+			ByteBuffer buffer = BufferManager.getPage(new PageId(getFileId(), r.getIdxPage()));
+			Record record = new Record();
+			readRecordFromBuffer(record, buffer, r.getOffset());
+			System.out.print(++recordCompt + ". ");
+			System.out.println(record);
+		}
+
+		System.out.println("Total records : " + recordCompt);
+	}
+
+	public void join(HeapFile hpS, int columnR, int columnS) throws IOException {
+		int recordCompt = 0;
+		HeaderPageInfo hpiR = new HeaderPageInfo();
+		ByteBuffer bufferR;
+		PageBitmapInfo pbiR = new PageBitmapInfo(getSlotCount());
+		Record recordR = new Record();
+		PageId piR = new PageId(getFileId(), 0);
+
+		getHeaderPageInfo(hpiR);
+		for (int i = 1; i < hpiR.getNbPagesDeDonnees(); i++)
+			if (hpiR.getNbSlotsAvailableAt(i) < getSlotCount()) {
+				piR.setIdx(i);
+				bufferR = BufferManager.getPage(piR);
+				readPageBitmapInfo(bufferR, pbiR);
+				for (int j = 0; j < getSlotCount(); j++)
+					if (pbiR.getValueAtIndexOfSlotsStatus(j) == 1) {
+						readRecordFromBuffer(recordR, bufferR, getSlotCount() + j * getRecordSize());
+
+						HeaderPageInfo hpiS = new HeaderPageInfo();
+						ByteBuffer bufferS;
+						PageBitmapInfo pbiS = new PageBitmapInfo(getSlotCount());
+						Record recordS = new Record();
+						PageId piS = new PageId(hpS.getFileId(), 0);
+
+						hpS.getHeaderPageInfo(hpiS);
+						for (int k = 1; k < hpiS.getNbPagesDeDonnees(); k++)
+							if (hpiS.getNbSlotsAvailableAt(k) < hpS.getSlotCount()) {
+								piS.setIdx(k);
+								bufferS = BufferManager.getPage(piS);
+								hpS.readPageBitmapInfo(bufferS, pbiS);
+								for (int l = 0; l < getSlotCount(); l++)
+									if (pbiS.getValueAtIndexOfSlotsStatus(k) == 1) {
+										hpS.readRecordFromBuffer(recordS, bufferS,hpS.getSlotCount() + j * hpS.getRecordSize());
+										String R = recordR.getValueAtIndex(columnR).trim();
+										String S = recordS.getValueAtIndex(columnS).trim();
+										if (R.equals(S)) {
+											System.out.print(++recordCompt + ". ");
+											System.out.println(recordR + " " + recordS);
+										}
+									}
+								BufferManager.freePage(piS, false);
+							}
+
+					}
+				BufferManager.freePage(piR, false);
+			}
+		System.out.println("Total records : " + recordCompt);
 	}
 
 }

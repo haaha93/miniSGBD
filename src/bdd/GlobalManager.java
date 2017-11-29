@@ -1,14 +1,18 @@
 package bdd;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import constant.Constant;
@@ -110,7 +114,11 @@ public class GlobalManager {
 		for (int i = 0; i < typeColumns.size(); i++) {
 			if (typeColumns.get(i).charAt(0) == 'S' || typeColumns.get(i).charAt(0) == 's') {
 				type = typeColumns.get(i).substring(0, 6);
-				longueur = Integer.parseInt((typeColumns.get(i).substring(6)));
+				try {
+					longueur = Integer.parseInt(typeColumns.get(i).substring(6));
+				} catch (NumberFormatException nfe) {
+					longueur = Constant.STRINGSIZE;
+				}
 			} else
 				type = typeColumns.get(i);
 
@@ -147,39 +155,40 @@ public class GlobalManager {
 		}
 	}
 
-	 public static void fill(String[] userInput) throws IOException {
-	 String relName = userInput[1];
-	 int indexOfRel = db.getIndexOfRelSchemaByName(relName);
-	
-	 if (indexOfRel == -1)
-	 System.out.println("Relation does not exist");
-	
-	 else {
-	 if (userInput[2].substring(userInput[2].length() - 4).equals(".csv")) {
-	 File file = new File(userInput[2]);
-	 RandomAccessFile raf = new RandomAccessFile(file, "r");
-	 HeapFile hf = heapFiles.get(indexOfRel);
-	 ArrayList<String> values = new ArrayList<>();
-	 StringTokenizer st = new StringTokenizer("", ",");
-	 String s = "";
-	
-	 raf.seek(0);
-	
-	 for (s = raf.readLine(); s != null; s = raf.readLine()) {
-	 st = new StringTokenizer(s, ",");
-	 while (st.hasMoreTokens())
-	 values.add(st.nextToken());
-	 hf.insertRecord(new Record(values));
-	 values.clear();
-	 }
-	
-	 raf.close();
-	 }
-	
-	 else
-	 System.out.println("Wrong file extension, must be \".csv\"");
-	 }
-	 }
+
+	public static void fill(String[] userInput) throws IOException {
+		String relName = userInput[1];
+		int indexOfRel = db.getIndexOfRelSchemaByName(relName);
+
+		if (indexOfRel == -1)
+			System.out.println("Relation does not exist");
+
+		else {
+			if (userInput[2].substring(userInput[2].length() - 4).equals(".csv")) {
+				File file = new File(userInput[2]);
+				RandomAccessFile raf = new RandomAccessFile(file, "r");
+				HeapFile hf = heapFiles.get(indexOfRel);
+				ArrayList<String> values = new ArrayList<>();
+				StringTokenizer st = new StringTokenizer("", ",");
+				String s = "";
+
+				raf.seek(0);
+
+				for (s = raf.readLine(); s != null; s = raf.readLine()) {
+					st = new StringTokenizer(s, ",");
+					while (st.hasMoreTokens())
+						values.add(st.nextToken());
+					hf.insertRecord(new Record(values));
+					values.clear();
+				}
+
+				raf.close();
+			}
+
+			else
+				System.out.println("Wrong file extension, must be \".csv\"");
+		}
+	}
 
 	public static void selectAll(String relName) throws IOException {
 		int indexOfRel = db.getIndexOfRelSchemaByName(relName);
@@ -196,6 +205,7 @@ public class GlobalManager {
 
 		if (indexOfRel == -1)
 			System.out.println("Relation does not exist");
+
 		else {
 			int indexColumn = Integer.parseInt(userInput[2]);
 			String value = userInput[3];
@@ -215,11 +225,48 @@ public class GlobalManager {
 		db.clean();
 		heapFiles.clear();
 	}
-	public static void join(String[] userInput) throws IOException{
-		HeapFile hp1 = heapFiles.get(db.getIndexOfRelSchemaByName(userInput[1]));
-		HeapFile hp2 = heapFiles.get(db.getIndexOfRelSchemaByName(userInput[2]));
-		hp1.joinPON(hp2, Integer.parseInt(userInput[3]), Integer.parseInt(userInput[4]));
+
+	public static void join(String[] userInput) throws IOException {
+		int indexOfR = db.getIndexOfRelSchemaByName(userInput[1]);
+		int indexOfS = db.getIndexOfRelSchemaByName(userInput[2]);
+
+		if (indexOfR == -1 || indexOfS == -1)
+			System.out.println("At least one relation does not exist");
+		else {
+			HeapFile hp1 = heapFiles.get(indexOfR);
+			HeapFile hp2 = heapFiles.get(indexOfS);
+			hp1.join(hp2, Integer.parseInt(userInput[3]), Integer.parseInt(userInput[4]));
+		}
 	}
-	
+
+	public static void createIndex(String[] userInput) throws IOException {
+		int index = db.getIndexOfRelSchemaByName(userInput[1]);
+
+		if (index == -1)
+			System.out.println("Relation does not exist");
+		else {
+			int key = Integer.parseInt(userInput[2]);
+			int d = Integer.parseInt(userInput[3]);
+			heapFiles.get(index).createIndex(d, key - 1);
+		}
+
+	}
+
+	// for testing b+tree
+	public static void d() {
+		heapFiles.get(0).display();
+	}
+
+	public static void selectIndex(String[] userInput) throws IOException {
+		int index = db.getIndexOfRelSchemaByName(userInput[1]);
+
+		if (index == -1)
+			System.out.println("Relation does not exist");
+		else {
+			int key = Integer.parseInt(userInput[2]);
+			String value = userInput[3];
+			heapFiles.get(index).selectIndex(key - 1, value);
+		}
+	}
 
 }

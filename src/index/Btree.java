@@ -37,25 +37,22 @@ public class Btree {
 
 	@Override
 	public String toString() {
-		return "Btree [root=" + root + ", d=" + d + ", key=" + key + "]";
+		return root.toString();
 	}
 
 	public Entry findEntry(String value, Node node) {
-		if (node.isEmpty())
-			return null;
-
 		if (node.isLeaf()) {
-			for (Entry e : node.getEntries())
-				if (e.getValue() != null && e.getValue().equals(value))
-					return e;
+			for (int i = 0; i < 2 * d; i++)
+				if (node.getEntry(i).getValue() == null || node.compareAt(i, value)==0)
+					return node.getEntry(i);
 			return null;
 		}
 
 		else
 			for (int i = 0; i < 2 * d; i++)
-				if (node.getEntry(i) != null && node.compareAt(i, value) > 0)
+				if (node.getEntry(i).getValue() == null || node.compareAt(i, value) > 0)
 					return findEntry(value, node.getSon(i));
-		return findEntry(value, node.getSon(2 * d + 1));
+		return findEntry(value, node.getSon(2 * d));
 
 	}
 
@@ -66,10 +63,10 @@ public class Btree {
 	public void simpleAddEntry(Entry entry, Node node, Node nodeToInsert) {
 		int index = -1;
 
-		while (node.getEntry(++index) != null && node.compareAt(index, entry.getValue()) < 0)
+		while (node.getEntry(++index).getValue() != null && node.compareAt(index, entry.getValue()) < 0)
 			;
 
-		for (int i = 2 * d - 1; i > index; i++) {
+		for (int i = (2 * d - 1); i > index; i--) {
 			node.setEntry(i, node.getEntry(i - 1));
 			node.setSon(i + 1, node.getSon(i));
 		}
@@ -86,7 +83,7 @@ public class Btree {
 
 		else
 			for (int i = 0; i < 2 * d; i++)
-				if (node.compareAt(i, value) > 0)
+				if (node.getEntry(i).getValue()==null || node.compareAt(i, value) > 0)
 					return findNode(value, node.getSon(i));
 
 		return findNode(value, node.getSon(2 * d));
@@ -94,7 +91,6 @@ public class Btree {
 
 	public void insertEntry(Entry entry) {
 		Node node = findNode(entry.getValue(), this.root);
-
 		if (node.isFull())
 			split(entry, node, null);
 
@@ -113,16 +109,16 @@ public class Btree {
 
 		if (find) {
 			simpleAddEntry(entry, node1, nodeToInsert);
-			e = node2.getEntry(1);
+			e = new Entry(node2.getEntry(0).getValue());
 			if (!node1.isLeaf()) {
-				e = node1.getEntry(d);
-				node1.setEntry(d, null);
+				e = new Entry(node1.getEntry(d).getValue());
+				node1.setEntry(d, new Entry());
 			}
 			return e;
 		}
 
 		simpleAddEntry(entry, node2, nodeToInsert);
-		e = node2.getEntry(1);
+		e = new Entry(node2.getEntry(0).getValue());
 		if (!node2.isLeaf()) {
 			node1.setSon(d, node2.getSon(0));
 			node1.getSon(d).setFather(node1);
@@ -130,6 +126,9 @@ public class Btree {
 				node2.setEntry(i, node2.getEntry(i + 1));
 				node2.setSon(i, node2.getSon(i + 1));
 			}
+			node2.setEntry(d, new Entry());
+			node2.setSon(d, node2.getSon(d+1) );
+			node2.setSon(d+1, null);
 		}
 		return e;
 	}
@@ -143,30 +142,37 @@ public class Btree {
 			newNode.setRightBrother(node.getRightBrother());
 			node.setRightBrother(newNode);
 		}
+		
 		for (int i = 0; i < d; i++) {
 			newNode.setEntry(i, node.getEntry(d + i));
-			node.setEntry(i, null);
-			newNode.setSon(i, node.getSon(d + 1 + i));
-			node.setSon(d + 1 + i, null);
+			node.setEntry(d + i, new Entry());
+			newNode.setSon(i, node.getSon(d + i));
+			node.setSon(d + i, null);
+			if(newNode.getSon(i)!=null)
+				newNode.getSon(i).setFather(newNode);
 		}
+		newNode.setSon(d, node.getSon(2*d));
+		node.setSon(2*d, null);
+		if(newNode.getSon(d)!=null)
+			newNode.getSon(d).setFather(newNode);
 
 		e = addEntryBetweenTwoNodes(entry, node, newNode, nodeToInsert);
 
 		if (node.getFather() == null) {
 			Node father = new Node(d);
-			node.setFather(father);
-			newNode.setFather(father);
-			father.setEntry(0, e);
-			father.setSon(0, node);
-			father.setSon(1, newNode);
 			root = father;
+			node.setFather(root);
+			newNode.setFather(root);
+			root.setEntry(0, e);
+			root.setSon(0, node);
+			root.setSon(1, newNode);
 		}
 
 		else {
 			if (node.getFather().isFull())
 				split(e, node.getFather(), newNode);
 			else
-				simpleAddEntry(e, node.getFather() , newNode);
+				simpleAddEntry(e, node.getFather(), newNode);
 		}
 	}
 }

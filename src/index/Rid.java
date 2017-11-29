@@ -29,7 +29,7 @@ public class Rid {
 
 	@Override
 	public String toString() {
-		return "Rid [idxPage=" + idxPage + ", offset=" + offset + "]";
+		return "(" + idxPage + "," + offset + ")";
 	}	
 	
 }

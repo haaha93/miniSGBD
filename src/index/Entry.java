@@ -9,13 +9,15 @@ public class Entry {
 
 	public Entry(String value) {
 		this.value = value;
-		if (this.rids == null)
-			this.rids = new ArrayList<Rid>();
+		this.rids = new ArrayList<Rid>();
+	}
+	
+	public Entry() {
+		this(null);
 	}
 
 	public Entry(String value, Rid rid) {
-		this.value = value;
-		rids = new ArrayList<Rid>();
+		this(value);
 		rids.add(rid);
 	}
 
@@ -41,7 +43,8 @@ public class Entry {
 
 	@Override
 	public String toString() {
-		return "Entry [value=" + value + ", rids=" + rids + "]";
+		return "{"+ value +"}";
 	}
+
 
 }
