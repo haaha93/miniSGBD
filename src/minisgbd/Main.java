@@ -11,7 +11,6 @@ public class Main {
 		try {
 			Menu.console();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally{
 			GlobalManager.finish();

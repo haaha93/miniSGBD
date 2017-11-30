@@ -30,6 +30,11 @@ public class Info {
 	public void incrementerNbslotsAvailable(int arg){
 		this.nbSlotsAvailable+=arg;
 	}
+
+	@Override
+	public String toString() {
+		return "Info [idxPages=" + idxPages + ", nbSlotsAvailable=" + nbSlotsAvailable + "]";
+	}
 	
 	
 

@@ -74,8 +74,9 @@ public class HeapFile {
 		DiskManager.createFile(getFileId());
 		DiskManager.addPage(getFileId());
 		bufferHeader = BufferManager.getPage(getHeaderPage());
+		bufferHeader.position(0);
 		writeHeaderPageInfo(bufferHeader, hpi);
-		DiskManager.writePage(getHeaderPage(), bufferHeader);
+		BufferManager.writePage(getHeaderPage(), bufferHeader);
 		BufferManager.freePage(getHeaderPage(), true);
 
 	}
@@ -105,8 +106,10 @@ public class HeapFile {
 		ByteBuffer buffer;
 		try {
 			buffer = BufferManager.getPage(getHeaderPage());
+			buffer.position(0);
 			readHeaderPageInfo(buffer, hpi);
 			BufferManager.freePage(getHeaderPage(), false);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -116,33 +119,37 @@ public class HeapFile {
 	public void updateHeaderDataPage(PageId newPageId) throws IOException {
 		HeaderPageInfo hpi = new HeaderPageInfo();
 		ByteBuffer bufferHeader = BufferManager.getPage(getHeaderPage());
+		bufferHeader.position(0);
 		readHeaderPageInfo(bufferHeader, hpi);
 		Info info = new Info(newPageId.getIdx(), getSlotCount());
 
 		hpi.addInfoAt(newPageId.getIdx(), info);
 		writeHeaderPageInfo(bufferHeader, hpi);
-		DiskManager.writePage(getHeaderPage(), bufferHeader);
+		BufferManager.writePage(getHeaderPage(), bufferHeader);
 		BufferManager.freePage(getHeaderPage(), true);
 	}
 
 	public void updateHeaderTakenSlot(PageId pid) throws IOException {
 		HeaderPageInfo hpi = new HeaderPageInfo();
 		ByteBuffer bufferHeader = BufferManager.getPage(getHeaderPage());
+		bufferHeader.position(0);
 		readHeaderPageInfo(bufferHeader, hpi);
 
 		hpi.incrementSlotAvailableAt(pid.getIdx(), -1);
 		writeHeaderPageInfo(bufferHeader, hpi);
 		BufferManager.getPage(getHeaderPage());
-		DiskManager.writePage(getHeaderPage(), bufferHeader);
+		BufferManager.writePage(getHeaderPage(), bufferHeader);
 		BufferManager.freePage(getHeaderPage(), true);
 	}
 
 	public void readPageBitmapInfo(ByteBuffer buffer, PageBitmapInfo pbi) {
+		buffer.position(0);
 		for (int i = 0; i < getSlotCount(); i++)
 			pbi.setValueAtIndexOfSlotsStatus(i, buffer.get(i));
 	}
 
 	public void writePageBitmapInfo(ByteBuffer buffer, PageBitmapInfo pbi) {
+		buffer.position(0);
 		for (int i = 0; i < getSlotCount(); i++)
 			buffer.put(i, pbi.getValueAtIndexOfSlotsStatus(i));
 
@@ -214,6 +221,7 @@ public class HeapFile {
 
 	public void insertRecordInPage(Record record, PageId pid) throws IOException {
 		ByteBuffer buffer = BufferManager.getPage(pid);
+		buffer.position(0);
 		PageBitmapInfo pbi = new PageBitmapInfo(getSlotCount());
 		readPageBitmapInfo(buffer, pbi);
 		int idx = -1;
@@ -229,7 +237,7 @@ public class HeapFile {
 
 		writePageBitmapInfo(buffer, pbi);
 
-		DiskManager.writePage(pid, buffer);
+		BufferManager.writePage(pid, buffer);
 
 		BufferManager.freePage(pid, true);
 
@@ -292,6 +300,7 @@ public class HeapFile {
 			if (hpi.getNbSlotsAvailableAt(i) < getSlotCount()) {
 				pi.setIdx(i);
 				buffer = BufferManager.getPage(pi);
+				buffer.position(0);
 				readPageBitmapInfo(buffer, pbi);
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
@@ -317,6 +326,7 @@ public class HeapFile {
 			if (hpi.getNbSlotsAvailableAt(i) < getSlotCount()) {
 				pi.setIdx(i);
 				buffer = BufferManager.getPage(pi);
+				buffer.position(0);
 				readPageBitmapInfo(buffer, pbi);
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
@@ -332,8 +342,7 @@ public class HeapFile {
 
 	}
 
-
-		public void createIndex(int d, int key) throws IOException {
+	public void createIndex(int d, int key) throws IOException {
 		btrees.add(key, new Btree(d, key));
 		HeaderPageInfo hpi = new HeaderPageInfo();
 		ByteBuffer buffer;
@@ -346,6 +355,7 @@ public class HeapFile {
 			if (hpi.getNbSlotsAvailableAt(i) < getSlotCount()) {
 				pi.setIdx(i);
 				buffer = BufferManager.getPage(pi);
+				buffer.position(0);
 				readPageBitmapInfo(buffer, pbi);
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
@@ -395,6 +405,7 @@ public class HeapFile {
 			if (hpiR.getNbSlotsAvailableAt(i) < getSlotCount()) {
 				piR.setIdx(i);
 				bufferR = BufferManager.getPage(piR);
+				bufferR.position(0);
 				readPageBitmapInfo(bufferR, pbiR);
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbiR.getValueAtIndexOfSlotsStatus(j) == 1) {
@@ -411,6 +422,7 @@ public class HeapFile {
 							if (hpiS.getNbSlotsAvailableAt(k) < hpS.getSlotCount()) {
 								piS.setIdx(k);
 								bufferS = BufferManager.getPage(piS);
+								bufferS.position();
 								hpS.readPageBitmapInfo(bufferS, pbiS);
 								for (int l = 0; l < getSlotCount(); l++)
 									if (pbiS.getValueAtIndexOfSlotsStatus(k) == 1) {

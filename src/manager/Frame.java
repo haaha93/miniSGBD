@@ -2,7 +2,6 @@ package manager;
 
 import java.nio.ByteBuffer;
 
-import constant.Constant;
 
 public class Frame {
 	
@@ -12,9 +11,8 @@ public class Frame {
 	private boolean dirty,	
 				refBit;
 	
-	@SuppressWarnings("static-access")
 	public Frame() {
-		buffer.allocate((int) Constant.PAGESIZE);
+		buffer = null;
 		pageId = null;
 		pinCount = 0;
 		dirty = false;

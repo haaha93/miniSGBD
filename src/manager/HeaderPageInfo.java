@@ -57,7 +57,7 @@ public class HeaderPageInfo {
 	
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuffer sb = new StringBuffer("nbPagesDeDonnes : "+nbPagesDeDonnees+" ");
 		for (Info i : infos)
 			sb.append("idx : "+i.getIdxPages()+" nb slots available : "+i.getNbSlotsAvailable()+"\n");
 		return sb.toString();

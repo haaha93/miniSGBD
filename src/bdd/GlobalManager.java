@@ -123,20 +123,14 @@ public class GlobalManager {
 			} else
 				type = typeColumns.get(i);
 
-			switch (type) {
+			switch (type.toLowerCase()) {
 			case "int":
-			case "Int":
-			case "INT":
 				recordSize += 4;
 				break;
 			case "float":
-			case "Float":
-			case "FLOAT":
 				recordSize += 4;
 				break;
 			case "string":
-			case "String":
-			case "STRING":
 				recordSize += 2 * longueur;
 				break;
 			}
