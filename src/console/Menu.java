@@ -36,7 +36,7 @@ public class Menu {
 
 			}
 
-			switch (rep[0]) {
+			switch (rep[0].toLowerCase()) {
 			case "help":
 				help();
 				break;
@@ -47,7 +47,7 @@ public class Menu {
 				GlobalManager.createRelation(rep);
 				break;
 			case "insert":
-				GlobalManager.insert(rep[1], rep);
+				GlobalManager.insert(rep);
 				break;
 			case "exit":
 				GlobalManager.finish();

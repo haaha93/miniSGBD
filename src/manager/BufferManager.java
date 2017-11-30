@@ -75,5 +75,7 @@ public class BufferManager {
 				DiskManager.writePage(frames[i].getPageId(), frames[i].getBuffer());
 		}
 	}
+	
+	
 
 }

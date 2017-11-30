@@ -87,7 +87,8 @@ public class GlobalManager {
 		}
 	}
 
-	public static void insert(String name, String[] userInput) throws IOException {
+	public static void insert(String[] userInput) throws IOException {
+		String name = userInput[1];
 		Record record = new Record();
 		List<String> values = new ArrayList<>(userInput.length - 2);
 		int indexOfRelDef;
@@ -101,7 +102,7 @@ public class GlobalManager {
 			heapFiles.get(indexOfRelDef).insertRecord(record);
 
 		else
-			System.out.println("Relation \"" + name + "\" does not exist");
+			System.out.println("Relation does not exist");
 
 	}
 
@@ -235,7 +236,7 @@ public class GlobalManager {
 		else {
 			HeapFile hp1 = heapFiles.get(indexOfR);
 			HeapFile hp2 = heapFiles.get(indexOfS);
-			hp1.join(hp2, Integer.parseInt(userInput[3]), Integer.parseInt(userInput[4]));
+			hp1.join(hp2, Integer.parseInt(userInput[3])-1, Integer.parseInt(userInput[4])-1);
 		}
 	}
 
