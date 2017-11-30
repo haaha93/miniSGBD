@@ -340,64 +340,8 @@ public class HeapFile {
 
 	}
 
-	public void joinPON(HeapFile hp2, int indexRel1, int indexRel2) throws IOException {
 
-		int recordCompt = 0;
-		HeaderPageInfo hpi = new HeaderPageInfo();
-		ByteBuffer buffer;
-		PageBitmapInfo pbi = new PageBitmapInfo(getSlotCount());
-		List<Record> records = new ArrayList<Record>();
-		PageId pi = new PageId(getFileId(), 0);
-
-		getHeaderPageInfo(hpi);
-
-		for (int i = 1; i < hpi.getNbPagesDeDonnees(); i++) {
-			if (hpi.getNbSlotsAvailableAt(i) < getSlotCount()) {
-				pi.setIdx(i);
-				buffer = BufferManager.getPage(pi);
-				readPageBitmapInfo(buffer, pbi);
-				for (int j = 0; j < getSlotCount(); j++)
-					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
-						records.add(j, new Record());
-						readRecordFromBuffer(records.get(j), buffer, getSlotCount() + j * getRecordSize());
-					}
-				BufferManager.freePage(pi, false);
-			}
-		}
-
-		HeaderPageInfo hpi2 = new HeaderPageInfo();
-		hp2.getHeaderPageInfo(hpi2);
-		PageBitmapInfo pbi2 = new PageBitmapInfo(getSlotCount());
-		List<Record> records2 = new ArrayList<Record>();
-		PageId pi2 = new PageId(hp2.getFileId(), 0);
-
-		for (int i = 1; i < hpi2.getNbPagesDeDonnees(); i++) {
-			if (hpi2.getNbSlotsAvailableAt(i) < getSlotCount()) {
-				pi2.setIdx(i);
-				buffer = BufferManager.getPage(pi2);
-				readPageBitmapInfo(buffer, pbi2);
-				for (int j = 0; j < getSlotCount(); j++)
-					if (pbi2.getValueAtIndexOfSlotsStatus(j) == 1) {
-						records2.add(j, new Record());
-						readRecordFromBuffer(records2.get(j), buffer, getSlotCount() + j * getRecordSize());
-					}
-				BufferManager.freePage(pi, false);
-			}
-		}
-
-		for (int i = 0; i < records.size(); i++) {
-			for (int j = 0; j < records2.size(); j++) {
-				if (records.get(i).getValueAtIndex(indexRel1 - 1)
-						.equals(records2.get(j).getValueAtIndex(indexRel2 - 1))) {
-
-					System.out.println("Join Result: " + records.get(i).toString() + " " + records2.get(j).toString());
-				}
-			}
-
-		}
-	}
-
-	public void createIndex(int d, int key) throws IOException {
+		public void createIndex(int d, int key) throws IOException {
 		btrees.add(key, new Btree(d, key));
 		HeaderPageInfo hpi = new HeaderPageInfo();
 		ByteBuffer buffer;
