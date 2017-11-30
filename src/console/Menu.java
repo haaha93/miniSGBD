@@ -68,15 +68,14 @@ public class Menu {
 			case "join":
 				GlobalManager.join(rep);
 				break;
+			case "joinindex":
+				GlobalManager.joinindex(rep);
+				break;
 			case "createindex":
 				GlobalManager.createIndex(rep);
 				break;
 			case "selectindex":
 				GlobalManager.selectIndex(rep);
-				break;
-			//for testing b+tree
-			case "d":
-				GlobalManager.d();
 				break;
 			default:
 				System.out.println("Choice not existing");
@@ -121,13 +120,16 @@ public class Menu {
 		System.out.println("Select each record of relation RelNam with value V at column IndexColumn.");
 		
 		System.out.println("\n\n\ncommand : \tjoin RelName1 RelName2 IndexColumnR1 IndexColumnR2\n");
-		System.out.println("Select each record of relation RelNam1 and RelName2 with common value between column IndexColumnR1 and IndexColumnR2 .");
+		System.out.println("Select each record of relation RelName1 and RelName2 with common value between column IndexColumnR1 and IndexColumnR2.");
 	
 		System.out.println("\n\n\ncommand : \tcreateindex RelName IndexColumn ValOrder\n");
 		System.out.println("Create an index on indexColumn column of RelName of order ValOrder.");
 		
 		System.out.println("\n\n\ncommand : \tselectindex RelName IndexColumn V\n");
 		System.out.println("Select value V with index on indexColumn column of relation RelName.");
+		
+		System.out.println("\n\n\ncommand : \tjoinindex RelName1 RelName2 IndexColumnR1 IndexColumnR2\n");
+		System.out.println("Select each record of relation RelName1 and RelName2 with common value between column IndexColumnR1 and IndexColumnR2, this method use an index on RelName2 .");
 	}
 
 	/**

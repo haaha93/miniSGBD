@@ -48,17 +48,20 @@ public class GlobalManager {
 	 *            database.
 	 */
 	public static void createRelation(String[] userInput) throws IOException {
-		RelSchema relSchema = new RelSchema(userInput);
-		int sizeRecord = calculRecordSize(relSchema);
-		int slotCount = (int) (Constant.PAGESIZE / (sizeRecord + 1));
-		int index = db.getCompteurRel();
-		RelDef relDef = new RelDef(relSchema, index, sizeRecord, slotCount);
+		if (db.getIndexOfRelSchemaByName(userInput[1]) == -1) {
+			RelSchema relSchema = new RelSchema(userInput);
+			int sizeRecord = calculRecordSize(relSchema);
+			int slotCount = (int) (Constant.PAGESIZE / (sizeRecord + 1));
+			int index = db.getCompteurRel();
+			RelDef relDef = new RelDef(relSchema, index, sizeRecord, slotCount);
 
-		db.addRelationToDBAtIndex(index, relDef);
-		HeapFile heapFile = new HeapFile(relDef);
-		heapFiles.add(index, heapFile);
-		heapFiles.get(index).createHeader();
-
+			db.addRelationToDBAtIndex(index, relDef);
+			HeapFile heapFile = new HeapFile(relDef);
+			heapFiles.add(index, heapFile);
+			heapFiles.get(index).createHeader();
+		}
+		else
+			System.out.println("Relation is already existant");
 	}
 
 	/**
@@ -150,7 +153,6 @@ public class GlobalManager {
 		}
 	}
 
-
 	public static void fill(String[] userInput) throws IOException {
 		String relName = userInput[1];
 		int indexOfRel = db.getIndexOfRelSchemaByName(relName);
@@ -230,7 +232,7 @@ public class GlobalManager {
 		else {
 			HeapFile hp1 = heapFiles.get(indexOfR);
 			HeapFile hp2 = heapFiles.get(indexOfS);
-			hp1.join(hp2, Integer.parseInt(userInput[3])-1, Integer.parseInt(userInput[4])-1);
+			hp1.join(hp2, Integer.parseInt(userInput[3]) - 1, Integer.parseInt(userInput[4]) - 1);
 		}
 	}
 
@@ -247,11 +249,6 @@ public class GlobalManager {
 
 	}
 
-	// for testing b+tree
-	public static void d() {
-		heapFiles.get(0).display();
-	}
-
 	public static void selectIndex(String[] userInput) throws IOException {
 		int index = db.getIndexOfRelSchemaByName(userInput[1]);
 
@@ -262,6 +259,19 @@ public class GlobalManager {
 			String value = userInput[3];
 			heapFiles.get(index).selectIndex(key - 1, value);
 		}
+	}
+
+	public static void joinindex(String[] userInput) throws NumberFormatException, IOException {
+		int indexOfR = db.getIndexOfRelSchemaByName(userInput[1]);
+		int indexOfS = db.getIndexOfRelSchemaByName(userInput[2]);
+
+		if (indexOfR == -1 || indexOfS == -1)
+			System.out.println("At least one relation does not exist");
+		else {
+			HeapFile hp1 = heapFiles.get(indexOfR);
+			HeapFile hp2 = heapFiles.get(indexOfS);
+			hp1.joinindex(hp2, Integer.parseInt(userInput[3]) - 1, Integer.parseInt(userInput[4]) - 1);
+		}	
 	}
 
 }
