@@ -32,7 +32,7 @@ public class BufferManager {
 		i = indexOfFrame(pageToRead);
 
 		if (i != -1) {
-			frames[i].setPinCount(1);
+			frames[i].setPinCount(true);
 			return frames[i].getBuffer();
 		}
 
@@ -41,7 +41,7 @@ public class BufferManager {
 				frames[i].setPageId(pageToRead);
 				DiskManager.readPage(pageToRead, buffer);
 				frames[i].setBuffer(buffer);
-				frames[i].setPinCount(1);
+				frames[i].setPinCount(true);
 				return frames[i].getBuffer();
 			}
 		}
@@ -51,9 +51,9 @@ public class BufferManager {
 		do
 
 		{
-			if (frames[i].getPinCount() == 0 && frames[i].getRefBit())
+			if (!frames[i].getPinCount() && frames[i].getRefBit())
 				frames[i].setRefBit(false);
-			else if (frames[i].getPinCount() == 0 && !frames[i].getRefBit())
+			else if (!frames[i].getPinCount() && !frames[i].getRefBit())
 				chosen = true;
 			i = (chosen) ? i : i + 1;
 			i = (i == frames.length) ? 0 : i;
@@ -61,15 +61,16 @@ public class BufferManager {
 
 		if (frames[i].isDirty())
 			DiskManager.writePage(frames[i].getPageId(), frames[i].getBuffer());
+			
 
 		frames[i].setPageId(pageToRead);
 		DiskManager.readPage(pageToRead, buffer);
 		frames[i].setBuffer(buffer);
-		frames[i].setPinCount(1);
+		frames[i].setPinCount(true);
 		frames[i].setRefBit(false);
 		frames[i].setDirty(false);
-
-		return buffer;
+		
+		return frames[i].getBuffer();
 	}
 
 	public static void freePage(PageId pageToFree, boolean isDirty) {
@@ -78,7 +79,7 @@ public class BufferManager {
 		if (index != -1) {
 			if (isDirty)
 				frames[index].setDirty(true);
-			frames[index].setPinCount(0);
+			frames[index].setPinCount(false);
 			frames[index].setRefBit(true);
 		} else
 			System.out.println("The page to free is not in the buffer");
@@ -89,7 +90,11 @@ public class BufferManager {
 		for (int i = 0; i < frames.length; i++) {
 			if (frames[i].isDirty())
 				DiskManager.writePage(frames[i].getPageId(), frames[i].getBuffer());
+			if (frames[i].getPinCount())
+				System.err.println("A page was not liberated");
 		}
+		
+		bufferManager();
 	}
 
 	public static void writePage(PageId pageToWrite, ByteBuffer bufferToWrite) {

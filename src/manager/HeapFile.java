@@ -148,14 +148,14 @@ public class HeapFile {
 		buffer.position(0);
 
 		for (int i = 0; i < getSlotCount(); i++)
-			pbi.setValueAtIndexOfSlotsStatus(i, buffer.get(i));
+			pbi.setValueAtIndexOfSlotsStatus(i, buffer.get());
 	}
 
 	public void writePageBitmapInfo(ByteBuffer buffer, PageBitmapInfo pbi) {
 		buffer.position(0);
 
 		for (int i = 0; i < getSlotCount(); i++)
-			buffer.put(i, pbi.getValueAtIndexOfSlotsStatus(i));
+			buffer.put(pbi.getValueAtIndexOfSlotsStatus(i));
 	}
 
 	public void writeRecordInBuffer(Record record, ByteBuffer buffer, int offset) {
@@ -201,11 +201,9 @@ public class HeapFile {
 
 	public PageId addDataPage() throws IOException {
 		PageId pid = DiskManager.addPage(getFileId());
-
 		updateHeaderDataPage(pid);
 
 		return pid;
-
 	}
 
 	public PageId getFreePage() throws IOException {
@@ -407,24 +405,24 @@ public class HeapFile {
 					if (pbiR.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(recordR, bufferR, getSlotCount() + j * getRecordSize());
 						HeaderPageInfo hpiS = new HeaderPageInfo();
-						PageBitmapInfo pbiS = new PageBitmapInfo(getSlotCount());
+						PageBitmapInfo pbiS = new PageBitmapInfo(hpS.getSlotCount());
 						Record recordS = new Record();
 
 						hpS.getHeaderPageInfo(hpiS);
 
 						for (int k = 1; k < hpiS.getNbPagesDeDonnees(); k++)
 							if (hpiS.getNbSlotsAvailableAt(k) < hpS.getSlotCount()) {
-								PageId piS = new PageId(hpS.getFileId(), i);
+								PageId piS = new PageId(hpS.getFileId(), k);
 								ByteBuffer bufferS = BufferManager.getPage(piS);
 								hpS.readPageBitmapInfo(bufferS, pbiS);
 
-								for (int l = 0; l < getSlotCount(); l++)
+								for (int l = 0; l < hpS.getSlotCount(); l++)
 									if (pbiS.getValueAtIndexOfSlotsStatus(l) == 1) {
 										hpS.readRecordFromBuffer(recordS, bufferS,
 												hpS.getSlotCount() + l * hpS.getRecordSize());
-										String R = recordR.getValueAtIndex(columnR).trim();
-										String S = recordS.getValueAtIndex(columnS).trim();
-										if (R.equals(S)) {
+										String r = recordR.getValueAtIndex(columnR).trim();
+										String s = recordS.getValueAtIndex(columnS).trim();
+										if (r.trim().equals(s.trim())) {
 											System.out.print(++recordCompt + ". ");
 											System.out.println(recordR + " " + recordS);
 										}
@@ -460,16 +458,16 @@ public class HeapFile {
 						if (pbiR.getValueAtIndexOfSlotsStatus(j) == 1) {
 							readRecordFromBuffer(recordR, bufferR, getSlotCount() + j * getRecordSize());
 							Entry entry = btree.findEntry(recordR.getValueAtIndex(columnR));
-							if (entry != null) {
+							if (entry != null)
 								for (Rid r : entry.getRids()) {
 									PageId piS = new PageId(hpS.getFileId(), r.getIdxPage());
 									ByteBuffer bufferS = BufferManager.getPage(piS);
 									Record recordS = new Record();
-									readRecordFromBuffer(recordS, bufferS, r.getOffset());
+									hpS.readRecordFromBuffer(recordS, bufferS, r.getOffset());
 									System.out.print(++recordCompt + ". ");
 									System.out.println(recordR + " " + recordS);
+									BufferManager.freePage(piS, false);
 								}
-							}
 						}
 					BufferManager.freePage(piR, false);
 				}

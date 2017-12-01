@@ -19,7 +19,6 @@ public class Menu {
 		Scanner sc = new Scanner(System.in);
 		
 		do {
-
 			System.out.println("Enter your command line (help for list of commands)");
 			
 			StringTokenizer st = new StringTokenizer(sc.nextLine());

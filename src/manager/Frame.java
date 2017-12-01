@@ -7,14 +7,14 @@ public class Frame {
 	
 	private ByteBuffer buffer;
 	private PageId pageId;
-	private int pinCount;
-	private boolean dirty,	
-				refBit;
+	private boolean pinCount;
+	private boolean dirty;	
+	private boolean	refBit;
 	
 	public Frame() {
 		buffer = null;
 		pageId = null;
-		pinCount = 0;
+		pinCount = false;
 		dirty = false;
 		refBit = false;
 	}
@@ -35,11 +35,11 @@ public class Frame {
 		this.pageId = pageId;
 	}
 
-	public int getPinCount() {
+	public boolean getPinCount() {
 		return pinCount;
 	}
 
-	public void setPinCount(int pinCount) {
+	public void setPinCount(boolean pinCount) {
 		this.pinCount = pinCount;
 	}
 

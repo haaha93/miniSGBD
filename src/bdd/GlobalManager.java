@@ -211,14 +211,15 @@ public class GlobalManager {
 		}
 	}
 
-	public static void clean() {
+	public static void clean() throws IOException {
+		BufferManager.flushAll();
+		
 		File file = new File("Catalog.def");
 		file.delete();
 		for (int i = 0; i < heapFiles.size(); i++) {
 			file = new File("BDD" + File.separator + "Data_" + i + ".rf");
 			file.delete();
 		}
-
 		db.clean();
 		heapFiles.clear();
 	}
