@@ -11,7 +11,6 @@ import bdd.RelSchema;
 import constant.Constant;
 import index.Btree;
 import index.Entry;
-import index.Node;
 import index.Rid;
 
 public class HeapFile {

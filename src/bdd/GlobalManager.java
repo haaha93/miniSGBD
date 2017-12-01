@@ -1,18 +1,14 @@
 package bdd;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import constant.Constant;
@@ -59,8 +55,7 @@ public class GlobalManager {
 			HeapFile heapFile = new HeapFile(relDef);
 			heapFiles.add(index, heapFile);
 			heapFiles.get(index).createHeader();
-		}
-		else
+		} else
 			System.out.println("Relation is already existant");
 	}
 
@@ -70,9 +65,12 @@ public class GlobalManager {
 	 * @throws IOException
 	 */
 	public static void finish() throws IOException {
-		File file = new File("Catalog.def");
-		try (FileOutputStream fos = new FileOutputStream(file); ObjectOutputStream oos = new ObjectOutputStream(fos);) {
-			oos.writeObject(db);
+		if (db.getCompteurRel() != 0) {
+			File file = new File("Catalog.def");
+			try (FileOutputStream fos = new FileOutputStream(file);
+					ObjectOutputStream oos = new ObjectOutputStream(fos);) {
+				oos.writeObject(db);
+			}
 		}
 		BufferManager.flushAll();
 	}
@@ -213,7 +211,7 @@ public class GlobalManager {
 
 	public static void clean() throws IOException {
 		BufferManager.flushAll();
-		
+
 		File file = new File("Catalog.def");
 		file.delete();
 		for (int i = 0; i < heapFiles.size(); i++) {
@@ -272,7 +270,7 @@ public class GlobalManager {
 			HeapFile hp1 = heapFiles.get(indexOfR);
 			HeapFile hp2 = heapFiles.get(indexOfS);
 			hp1.joinindex(hp2, Integer.parseInt(userInput[3]) - 1, Integer.parseInt(userInput[4]) - 1);
-		}	
+		}
 	}
 
 }
