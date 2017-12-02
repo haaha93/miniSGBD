@@ -390,45 +390,48 @@ public class HeapFile {
 	public void join(HeapFile hpS, int columnR, int columnS) throws IOException {
 		int recordCompt = 0;
 		HeaderPageInfo hpiR = new HeaderPageInfo();
-		PageBitmapInfo pbiR = new PageBitmapInfo(getSlotCount());
-		Record recordR = new Record();
 
 		getHeaderPageInfo(hpiR);
 		for (int i = 1; i < hpiR.getNbPagesDeDonnees(); i++)
 			if (hpiR.getNbSlotsAvailableAt(i) < getSlotCount()) {
+
 				PageId piR = new PageId(getFileId(), i);
 				ByteBuffer bufferR = BufferManager.getPage(piR);
+				PageBitmapInfo pbiR = new PageBitmapInfo(getSlotCount());
 				readPageBitmapInfo(bufferR, pbiR);
 
-				for (int j = 0; j < getSlotCount(); j++)
-					if (pbiR.getValueAtIndexOfSlotsStatus(j) == 1) {
-						readRecordFromBuffer(recordR, bufferR, getSlotCount() + j * getRecordSize());
-						HeaderPageInfo hpiS = new HeaderPageInfo();
+				HeaderPageInfo hpiS = new HeaderPageInfo();
+				hpS.getHeaderPageInfo(hpiS);
+
+				for (int j = 1; j < hpiS.getNbPagesDeDonnees(); j++)
+					if (hpiS.getNbSlotsAvailableAt(j) < hpS.getSlotCount()) {
+
+						PageId piS = new PageId(hpS.getFileId(), j);
+						ByteBuffer bufferS = BufferManager.getPage(piS);
 						PageBitmapInfo pbiS = new PageBitmapInfo(hpS.getSlotCount());
-						Record recordS = new Record();
+						hpS.readPageBitmapInfo(bufferS, pbiS);
 
-						hpS.getHeaderPageInfo(hpiS);
+						for (int k = 0; k < getSlotCount(); k++)
+							if (pbiR.getValueAtIndexOfSlotsStatus(k) == 1) {
 
-						for (int k = 1; k < hpiS.getNbPagesDeDonnees(); k++)
-							if (hpiS.getNbSlotsAvailableAt(k) < hpS.getSlotCount()) {
-								PageId piS = new PageId(hpS.getFileId(), k);
-								ByteBuffer bufferS = BufferManager.getPage(piS);
-								hpS.readPageBitmapInfo(bufferS, pbiS);
+								Record recordR = new Record();
+								readRecordFromBuffer(recordR, bufferR, getSlotCount() + k * getRecordSize());
+								String valueR = recordR.getValueAtIndex(columnR);
 
 								for (int l = 0; l < hpS.getSlotCount(); l++)
 									if (pbiS.getValueAtIndexOfSlotsStatus(l) == 1) {
-										hpS.readRecordFromBuffer(recordS, bufferS,
-												hpS.getSlotCount() + l * hpS.getRecordSize());
-										String r = recordR.getValueAtIndex(columnR).trim();
-										String s = recordS.getValueAtIndex(columnS).trim();
-										if (r.trim().equals(s.trim())) {
+
+										Record recordS = new Record();
+										hpS.readRecordFromBuffer(recordS, bufferS,hpS.getSlotCount() + l * hpS.getRecordSize());
+										String valueS = recordS.getValueAtIndex(columnS);
+
+										if (valueR.trim().equals(valueS.trim())) {
 											System.out.print(++recordCompt + ". ");
 											System.out.println(recordR + " " + recordS);
 										}
 									}
-								BufferManager.freePage(piS, false);
 							}
-
+						BufferManager.freePage(piS, false);
 					}
 				BufferManager.freePage(piR, false);
 			}
