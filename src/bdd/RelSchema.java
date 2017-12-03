@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import console.IG;
+
 public class RelSchema implements Serializable{
 
 	/**
@@ -24,7 +26,7 @@ public class RelSchema implements Serializable{
 	public RelSchema(String[] userInput) {
 		name = userInput[1];
 		nbColumns = Integer.parseInt(userInput[2]);
-		typeColumns = new ArrayList<String>(nbColumns); // selection du type à
+		typeColumns = new ArrayList<String>(nbColumns); // selection du type ﾃ�
 														// faire
 		for (int i = 3; i < userInput.length; i++)
 			typeColumns.add(i-3,userInput[i]);
@@ -34,10 +36,10 @@ public class RelSchema implements Serializable{
 	 * Display of the relation.
 	 */
 	public void display() {
-		System.out.print("name : " + name + ", nb of columns : " + nbColumns + ", type of columns : ");
+		IG.println("name : " + name + ", nb of columns : " + nbColumns + ", type of columns : ");
 		for (String s : typeColumns)
-			System.out.print(s + " ");
-		System.out.println();
+			IG.println(s + " ");
+		IG.println("");
 	}
 
 	public String toString() {

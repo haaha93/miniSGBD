@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import console.IG;
 import constant.Constant;
 import manager.BufferManager;
 import manager.HeapFile;
@@ -39,8 +40,7 @@ public class GlobalManager {
 
 	/**
 	 * 
-	 * @param userInput
-	 *            , tab of String containing user's values. Add a relation in the
+	 * @param userInput array of String containing user's values. Add a relation in the
 	 *            database.
 	 */
 	public static void createRelation(String[] userInput) throws IOException {
@@ -56,7 +56,7 @@ public class GlobalManager {
 			heapFiles.add(index, heapFile);
 			heapFiles.get(index).createHeader();
 		} else
-			System.out.println("Relation is already existant");
+			IG.println("Relation already exists");
 	}
 
 	/**
@@ -75,6 +75,12 @@ public class GlobalManager {
 		BufferManager.flushAll();
 	}
 
+	
+	/**
+	 * refreshes the list of heapfiles with the newly added relations
+	 *@throws IOException  
+	 * 
+	 */
 	public static void refreshHeapFiles() throws IOException {
 		RelDef relDef;
 		RelSchema relSchema;
@@ -87,6 +93,12 @@ public class GlobalManager {
 			heapFiles.add(i, new HeapFile(relDef));
 		}
 	}
+	
+	/**
+	 * Insert a record in the db
+	 *@param Array of String, the user's input
+	 *  
+	 */
 
 	public static void insert(String[] userInput) throws IOException {
 		String name = userInput[1];
@@ -103,9 +115,15 @@ public class GlobalManager {
 			heapFiles.get(indexOfRelDef).insertRecord(record);
 
 		else
-			System.out.println("Relation does not exist");
+			IG.println("Relation does not exist");
 
 	}
+	
+	/**
+	 * Count the record size for a specific relation
+	 *@param RelSchema relation's schema  
+	 * 
+	 */
 
 	public static int calculRecordSize(RelSchema relSchema) {
 		List<String> typeColumns = relSchema.getTypeColumns();
@@ -146,17 +164,23 @@ public class GlobalManager {
 	public static void displayRelSchema() {
 		int i = 0;
 		for (RelDef r : db.getListRelation()) {
-			System.out.print(++i + ". ");
+			IG.println(++i + ". ");
 			r.getRelSchema().display();
 		}
 	}
+	
+	/**
+	 * fill a relation with the record from a CSV file
+	 *@param  Array of String, user's input.
+	 * 
+	 */
 
 	public static void fill(String[] userInput) throws IOException {
 		String relName = userInput[1];
 		int indexOfRel = db.getIndexOfRelSchemaByName(relName);
 
 		if (indexOfRel == -1)
-			System.out.println("Relation does not exist");
+			IG.println("Relation does not exist");
 
 		else {
 			if (userInput[2].substring(userInput[2].length() - 4).equals(".csv")) {
@@ -181,25 +205,36 @@ public class GlobalManager {
 			}
 
 			else
-				System.out.println("Wrong file extension, must be \".csv\"");
+				IG.println("Wrong file extension, must be \".csv\"");
 		}
 	}
 
+	
+	/**
+	 * Prints all the record for a specified relation
+	 *@param String, relations name
+	 * 
+	 */
 	public static void selectAll(String relName) throws IOException {
 		int indexOfRel = db.getIndexOfRelSchemaByName(relName);
 		if (indexOfRel == -1)
-			System.out.println("Relation does not exist");
+			IG.println("Relation does not exist");
 		else
 			heapFiles.get(db.getIndexOfRelSchemaByName(relName)).printAllRecords();
 
 	}
 
+	/**
+	 * Select a relation 
+	 *@param Array of String, name of the relation to select
+	 * @throws IOException
+	 */
 	public static void select(String[] userInput) throws IOException {
 
 		int indexOfRel = db.getIndexOfRelSchemaByName(userInput[1]);
 
 		if (indexOfRel == -1)
-			System.out.println("Relation does not exist");
+			IG.println("Relation does not exist");
 
 		else {
 			int indexColumn = Integer.parseInt(userInput[2]);
@@ -209,6 +244,11 @@ public class GlobalManager {
 		}
 	}
 
+	/**
+	 * Delete all of the db
+	 *@throws IOException 
+	 * 
+	 */
 	public static void clean() throws IOException {
 		BufferManager.flushAll();
 
@@ -221,13 +261,20 @@ public class GlobalManager {
 		db.clean();
 		heapFiles.clear();
 	}
+	
+	
+	/**
+	 * Join 2 specified relations
+	 *@param Array of String, user's input, the 2 relations to join
+	 * 
+	 */
 
 	public static void join(String[] userInput) throws IOException {
 		int indexOfR = db.getIndexOfRelSchemaByName(userInput[1]);
 		int indexOfS = db.getIndexOfRelSchemaByName(userInput[2]);
 
 		if (indexOfR == -1 || indexOfS == -1)
-			System.out.println("At least one relation does not exist");
+			IG.println("At least one relation does not exist");
 		else {
 			HeapFile hp1 = heapFiles.get(indexOfR);
 			HeapFile hp2 = heapFiles.get(indexOfS);
@@ -235,11 +282,16 @@ public class GlobalManager {
 		}
 	}
 
+	/**
+	 * Create an index
+	 *@param String, name of the relation to be indexed
+	 * 
+	 */
 	public static void createIndex(String[] userInput) throws IOException {
 		int index = db.getIndexOfRelSchemaByName(userInput[1]);
 
 		if (index == -1)
-			System.out.println("Relation does not exist");
+			IG.println("Relation does not exist");
 		else {
 			int key = Integer.parseInt(userInput[2]);
 			int d = Integer.parseInt(userInput[3]);
@@ -248,11 +300,16 @@ public class GlobalManager {
 
 	}
 
+	/**
+	 * get the index of a specified relation
+	 *@param Array of String, contains the name of the relation
+	 * 
+	 */
 	public static void selectIndex(String[] userInput) throws IOException {
 		int index = db.getIndexOfRelSchemaByName(userInput[1]);
 
 		if (index == -1)
-			System.out.println("Relation does not exist");
+			IG.println("Relation does not exist");
 		else {
 			int key = Integer.parseInt(userInput[2]);
 			String value = userInput[3];
@@ -260,12 +317,17 @@ public class GlobalManager {
 		}
 	}
 
+	/**
+	 * 
+	 *@param 
+	 * 
+	 */
 	public static void joinindex(String[] userInput) throws NumberFormatException, IOException {
 		int indexOfR = db.getIndexOfRelSchemaByName(userInput[1]);
 		int indexOfS = db.getIndexOfRelSchemaByName(userInput[2]);
 
 		if (indexOfR == -1 || indexOfS == -1)
-			System.out.println("At least one relation does not exist");
+			IG.println("At least one relation does not exist");
 		else {
 			HeapFile hp1 = heapFiles.get(indexOfR);
 			HeapFile hp2 = heapFiles.get(indexOfS);

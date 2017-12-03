@@ -8,6 +8,7 @@ import java.util.List;
 import bdd.Record;
 import bdd.RelDef;
 import bdd.RelSchema;
+import console.IG;
 import constant.Constant;
 import index.Btree;
 import index.Entry;
@@ -294,13 +295,13 @@ public class HeapFile {
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
-						System.out.print(++recordCompt + ". ");
-						System.out.println(record);
+						IG.println(++recordCompt + ". ");
+						IG.println(record.toString());
 					}
 				BufferManager.freePage(pi, false);
 			}
 
-		System.out.println("Total records : " + recordCompt);
+		IG.println("Total records : " + recordCompt);
 	}
 
 	public void printAllRecordsWithFilter(int indexColumn, String value) throws IOException {
@@ -320,14 +321,14 @@ public class HeapFile {
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
 						if (record.getValueAtIndex(indexColumn - 1).trim().equals(value)) {
-							System.out.print(++recordCompt + ". ");
-							System.out.println(record);
+							IG.println(++recordCompt + ". ");
+							IG.println(record.toString());
 						}
 					}
 				BufferManager.freePage(pi, false);
 			}
 
-		System.out.println("Total records : " + recordCompt);
+		IG.println("Total records : " + recordCompt);
 
 	}
 
@@ -364,7 +365,7 @@ public class HeapFile {
 
 	public void selectIndex(int key, String value) throws IOException {
 		if (indexOfTree(key) == -1)
-			System.out.println("Index does not exist");
+			IG.println("Index does not exist");
 		else {
 			int index = indexOfTree(key);
 
@@ -377,13 +378,13 @@ public class HeapFile {
 					ByteBuffer buffer = BufferManager.getPage(pi);
 					Record record = new Record();
 					readRecordFromBuffer(record, buffer, r.getOffset());
-					System.out.print(++recordCompt + ". ");
-					System.out.println(record);
+					IG.println(++recordCompt + ". ");
+					IG.println(record.toString());
 					BufferManager.freePage(pi, false);
 
 				}
 
-			System.out.println("Total records : " + recordCompt);
+			IG.println("Total records : " + recordCompt);
 		}
 	}
 
@@ -422,8 +423,8 @@ public class HeapFile {
 										String r = recordR.getValueAtIndex(columnR).trim();
 										String s = recordS.getValueAtIndex(columnS).trim();
 										if (r.trim().equals(s.trim())) {
-											System.out.print(++recordCompt + ". ");
-											System.out.println(recordR + " " + recordS);
+											IG.println(++recordCompt + ". ");
+											IG.println(recordR + " " + recordS);
 										}
 									}
 								BufferManager.freePage(piS, false);
@@ -432,14 +433,14 @@ public class HeapFile {
 					}
 				BufferManager.freePage(piR, false);
 			}
-		System.out.println("Total records : " + recordCompt);
+		IG.println("Total records : " + recordCompt);
 	}
 
 	public void joinindex(HeapFile hpS, int columnR, int columnS) throws IOException {
 		Btree btree = hpS.getBreeWithKey(columnS);
 
 		if (btree == null) {
-			System.out.println("Index does not exist");
+			IG.println("Index does not exist");
 		} else {
 			int recordCompt = 0;
 			HeaderPageInfo hpiR = new HeaderPageInfo();
@@ -463,14 +464,14 @@ public class HeapFile {
 									ByteBuffer bufferS = BufferManager.getPage(piS);
 									Record recordS = new Record();
 									hpS.readRecordFromBuffer(recordS, bufferS, r.getOffset());
-									System.out.print(++recordCompt + ". ");
-									System.out.println(recordR + " " + recordS);
+									IG.println(++recordCompt + ". ");
+									IG.println(recordR + " " + recordS);
 									BufferManager.freePage(piS, false);
 								}
 						}
 					BufferManager.freePage(piR, false);
 				}
-			System.out.println("Total records : " + recordCompt);
+			IG.println("Total records : " + recordCompt);
 		}
 	}
 }

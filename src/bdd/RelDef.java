@@ -6,16 +6,17 @@ import manager.PageId;
 
 public class RelDef implements Serializable{
 	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	private RelSchema relSchema;
 	private PageId headerPage;
 	private int recordSize;
 	private int slotCount;
 	
-
+	/**
+	 * 
+	 * @param String of user's input 
+	 */
 	public RelDef(String[] userInput,int page) {
 		relSchema = new RelSchema(userInput);
 		this.headerPage = new PageId(page, 0);

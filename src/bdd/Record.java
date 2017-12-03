@@ -6,6 +6,11 @@ import java.util.List;
 public class Record {
 	private List<String> values;
 
+	
+	/**
+	 * create an instance of a record
+	 * @param a List of values for a specified record
+	 */
 	public Record(List<String> values) {
 		this.values = values;
 	}
@@ -27,6 +32,11 @@ public class Record {
 		return values.get(index);
 	}
 
+	
+	/**
+	 * return the record as String
+	 * 
+	 */
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer("");
