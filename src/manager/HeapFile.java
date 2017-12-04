@@ -426,7 +426,7 @@ public class HeapFile {
 	}
 
 	public void joinindex(HeapFile hpS, int columnR, int columnS) throws IOException {
-		if (btrees[columnS] == null) {
+		if (hpS.btrees[columnS] == null) {
 			System.out.println("Index does not exist");
 		} else {
 			int recordCompt = 0;
@@ -444,7 +444,7 @@ public class HeapFile {
 					for (int j = 0; j < getSlotCount(); j++)
 						if (pbiR.getValueAtIndexOfSlotsStatus(j) == 1) {
 							readRecordFromBuffer(recordR, bufferR, getSlotCount() + j * getRecordSize());
-							Entry entry = btrees[columnS].findEntry(recordR.getValueAtIndex(columnR));
+							Entry entry = hpS.btrees[columnS].findEntry(recordR.getValueAtIndex(columnR));
 							if (entry != null)
 								for (Rid r : entry.getRids()) {
 									PageId piS = new PageId(hpS.getFileId(), r.getIdxPage());
