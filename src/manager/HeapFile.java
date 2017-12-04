@@ -16,11 +16,11 @@ import index.Rid;
 public class HeapFile {
 
 	private RelDef relDef;
-	private List<Btree> btrees;
+	private Btree[] btrees;
 
 	public HeapFile(RelDef relDef) {
 		this.relDef = relDef;
-		btrees = new ArrayList<Btree>();
+		btrees = new Btree[relDef.getRelSchema().getNbColumns()];
 	}
 
 	public int getFileId() {
@@ -61,21 +61,6 @@ public class HeapFile {
 
 	public ArrayList<String> getTypeColumns() {
 		return (ArrayList<String>) this.relDef.getRelSchema().getTypeColumns();
-	}
-
-	public Btree getBreeWithKey(int key) {
-		int index = indexOfTree(key);
-		if (index == -1)
-			return null;
-		return btrees.get(index);
-	}
-
-	public int indexOfTree(int key) {
-		for (int i = 0; i < btrees.size(); i++)
-			if (btrees.get(i).getKey() == key)
-				return i;
-
-		return -1;
 	}
 
 	public void createHeader() throws IOException {
@@ -225,12 +210,17 @@ public class HeapFile {
 
 		while (pbi.getValueAtIndexOfSlotsStatus(++idx) != 0)
 			;
-
-		writeRecordInBuffer(record, buffer, getSlotCount() + idx * getRecordSize());
+		int offset = getSlotCount() + idx * getRecordSize();
+		
+		writeRecordInBuffer(record, buffer, offset);
 		pbi.setValueAtIndexOfSlotsStatus(idx, (byte) 1);
 		writePageBitmapInfo(buffer, pbi);
 		BufferManager.writePage(pid, buffer);
 		BufferManager.freePage(pid, true);
+		
+		for (int i = 0 ; i < getNbColumns() ; i++)
+			if (btrees[i]!=null)
+				btrees[i].insertEntry(new Entry(record.getValueAtIndex(i),new Rid(pid.getIdx(),offset)));
 
 	}
 
@@ -332,10 +322,9 @@ public class HeapFile {
 	}
 
 	public void createIndex(int d, int key) throws IOException {
-		if (indexOfTree(key) == -1)
-			btrees.add(new Btree(d, key));
+		if (btrees[key] == null)
+			btrees[key] =new Btree(d, key);
 
-		int index = indexOfTree(key);
 		HeaderPageInfo hpi = new HeaderPageInfo();
 		PageBitmapInfo pbi = new PageBitmapInfo(getSlotCount());
 		Record record = new Record();
@@ -352,9 +341,9 @@ public class HeapFile {
 						int offset = getSlotCount() + j * getRecordSize();
 						readRecordFromBuffer(record, buffer, offset);
 						String value = record.getValueAtIndex(key);
-						Entry entry = btrees.get(index).findEntry(value);
+						Entry entry = btrees[key].findEntry(value);
 						if (entry == null || entry.getValue() == null)
-							btrees.get(index).insertEntry(new Entry(value, new Rid(i, offset)));
+							btrees[key].insertEntry(new Entry(value, new Rid(i, offset)));
 						else
 							entry.addRid(new Rid(i, offset));
 					}
@@ -363,12 +352,10 @@ public class HeapFile {
 	}
 
 	public void selectIndex(int key, String value) throws IOException {
-		if (indexOfTree(key) == -1)
+		if (btrees[key] == null)
 			System.out.println("Index does not exist");
 		else {
-			int index = indexOfTree(key);
-
-			Entry entry = btrees.get(index).findEntry(value);
+			Entry entry = btrees[key].findEntry(value);
 			int recordCompt = 0;
 
 			if (entry != null)
@@ -439,9 +426,7 @@ public class HeapFile {
 	}
 
 	public void joinindex(HeapFile hpS, int columnR, int columnS) throws IOException {
-		Btree btree = hpS.getBreeWithKey(columnS);
-
-		if (btree == null) {
+		if (btrees[columnS] == null) {
 			System.out.println("Index does not exist");
 		} else {
 			int recordCompt = 0;
@@ -459,7 +444,7 @@ public class HeapFile {
 					for (int j = 0; j < getSlotCount(); j++)
 						if (pbiR.getValueAtIndexOfSlotsStatus(j) == 1) {
 							readRecordFromBuffer(recordR, bufferR, getSlotCount() + j * getRecordSize());
-							Entry entry = btree.findEntry(recordR.getValueAtIndex(columnR));
+							Entry entry = btrees[columnS].findEntry(recordR.getValueAtIndex(columnR));
 							if (entry != null)
 								for (Rid r : entry.getRids()) {
 									PageId piS = new PageId(hpS.getFileId(), r.getIdxPage());

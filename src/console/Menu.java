@@ -130,33 +130,4 @@ public class Menu {
 		System.out.println("\n\n\ncommand : \tjoinindex RelName1 RelName2 IndexColumnR1 IndexColumnR2\n");
 		System.out.println("Select each record of relation RelName1 and RelName2 with common value between column IndexColumnR1 and IndexColumnR2, this method use an index on RelName2 .");
 	}
-
-	/**
-	 * First step, ask the password of the data base but actually launch an
-	 * exception god knows for what...
-	 */
-	// public static void displayConnexion() {
-	//
-	// boolean mdpIsOkay = false;
-	// String reponse;
-	// Scanner sc = new Scanner(System.in);
-	//
-	// do {
-	// System.out.println("***Please, enter password***(Type \"exit\" to
-	// egress)");
-	// reponse = (sc.next());
-	// mdpIsOkay = reponse.equals("mdp");
-	//
-	// } while (!reponse.equals("exit") && (mdpIsOkay == false));
-	//
-	// sc.close();
-	//
-	// if (reponse.equals("exit")) {
-	// System.out.println("Goodbye");
-	// System.exit(0);
-	// }
-	//
-	// console();
-	//
-	// }
 }
