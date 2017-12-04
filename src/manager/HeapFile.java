@@ -17,11 +17,11 @@ import index.Rid;
 public class HeapFile {
 
 	private RelDef relDef;
-	private List<Btree> btrees;
+	private Btree[] btrees;
 
 	public HeapFile(RelDef relDef) {
 		this.relDef = relDef;
-		btrees = new ArrayList<Btree>();
+		btrees = new Btree[relDef.getRelSchema().getNbColumns()];
 	}
 
 	public int getFileId() {
@@ -62,21 +62,6 @@ public class HeapFile {
 
 	public ArrayList<String> getTypeColumns() {
 		return (ArrayList<String>) this.relDef.getRelSchema().getTypeColumns();
-	}
-
-	public Btree getBreeWithKey(int key) {
-		int index = indexOfTree(key);
-		if (index == -1)
-			return null;
-		return btrees.get(index);
-	}
-
-	public int indexOfTree(int key) {
-		for (int i = 0; i < btrees.size(); i++)
-			if (btrees.get(i).getKey() == key)
-				return i;
-
-		return -1;
 	}
 
 	public void createHeader() throws IOException {
@@ -226,12 +211,17 @@ public class HeapFile {
 
 		while (pbi.getValueAtIndexOfSlotsStatus(++idx) != 0)
 			;
+		int offset = getSlotCount() + idx * getRecordSize();
 
-		writeRecordInBuffer(record, buffer, getSlotCount() + idx * getRecordSize());
+		writeRecordInBuffer(record, buffer, offset);
 		pbi.setValueAtIndexOfSlotsStatus(idx, (byte) 1);
 		writePageBitmapInfo(buffer, pbi);
 		BufferManager.writePage(pid, buffer);
 		BufferManager.freePage(pid, true);
+
+		for (int i = 0; i < getNbColumns(); i++)
+			if (btrees[i] != null)
+				btrees[i].insertEntry(new Entry(record.getValueAtIndex(i), new Rid(pid.getIdx(), offset)));
 
 	}
 
@@ -295,8 +285,7 @@ public class HeapFile {
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
-						IG.println(++recordCompt + ". ");
-						IG.println(record.toString());
+						IG.println(++recordCompt + ". " + record.toString());
 					}
 				BufferManager.freePage(pi, false);
 			}
@@ -320,10 +309,8 @@ public class HeapFile {
 				for (int j = 0; j < getSlotCount(); j++)
 					if (pbi.getValueAtIndexOfSlotsStatus(j) == 1) {
 						readRecordFromBuffer(record, buffer, getSlotCount() + j * getRecordSize());
-						if (record.getValueAtIndex(indexColumn - 1).trim().equals(value)) {
-							IG.println(++recordCompt + ". ");
-							IG.println(record.toString());
-						}
+						if (record.getValueAtIndex(indexColumn - 1).trim().equals(value))
+							IG.println(++recordCompt + ". " + record.toString());
 					}
 				BufferManager.freePage(pi, false);
 			}
@@ -333,10 +320,9 @@ public class HeapFile {
 	}
 
 	public void createIndex(int d, int key) throws IOException {
-		if (indexOfTree(key) == -1)
-			btrees.add(new Btree(d, key));
+		if (btrees[key] == null)
+			btrees[key] = new Btree(d, key);
 
-		int index = indexOfTree(key);
 		HeaderPageInfo hpi = new HeaderPageInfo();
 		PageBitmapInfo pbi = new PageBitmapInfo(getSlotCount());
 		Record record = new Record();
@@ -353,9 +339,9 @@ public class HeapFile {
 						int offset = getSlotCount() + j * getRecordSize();
 						readRecordFromBuffer(record, buffer, offset);
 						String value = record.getValueAtIndex(key);
-						Entry entry = btrees.get(index).findEntry(value);
+						Entry entry = btrees[key].findEntry(value);
 						if (entry == null || entry.getValue() == null)
-							btrees.get(index).insertEntry(new Entry(value, new Rid(i, offset)));
+							btrees[key].insertEntry(new Entry(value, new Rid(i, offset)));
 						else
 							entry.addRid(new Rid(i, offset));
 					}
@@ -364,12 +350,10 @@ public class HeapFile {
 	}
 
 	public void selectIndex(int key, String value) throws IOException {
-		if (indexOfTree(key) == -1)
+		if (btrees[key] == null)
 			IG.println("Index does not exist");
 		else {
-			int index = indexOfTree(key);
-
-			Entry entry = btrees.get(index).findEntry(value);
+			Entry entry = btrees[key].findEntry(value);
 			int recordCompt = 0;
 
 			if (entry != null)
@@ -378,8 +362,7 @@ public class HeapFile {
 					ByteBuffer buffer = BufferManager.getPage(pi);
 					Record record = new Record();
 					readRecordFromBuffer(record, buffer, r.getOffset());
-					IG.println(++recordCompt + ". ");
-					IG.println(record.toString());
+					IG.println(++recordCompt + ". " + record.toString());
 					BufferManager.freePage(pi, false);
 
 				}
@@ -391,45 +374,47 @@ public class HeapFile {
 	public void join(HeapFile hpS, int columnR, int columnS) throws IOException {
 		int recordCompt = 0;
 		HeaderPageInfo hpiR = new HeaderPageInfo();
-		PageBitmapInfo pbiR = new PageBitmapInfo(getSlotCount());
-		Record recordR = new Record();
 
 		getHeaderPageInfo(hpiR);
 		for (int i = 1; i < hpiR.getNbPagesDeDonnees(); i++)
 			if (hpiR.getNbSlotsAvailableAt(i) < getSlotCount()) {
+
 				PageId piR = new PageId(getFileId(), i);
 				ByteBuffer bufferR = BufferManager.getPage(piR);
+				PageBitmapInfo pbiR = new PageBitmapInfo(getSlotCount());
 				readPageBitmapInfo(bufferR, pbiR);
 
-				for (int j = 0; j < getSlotCount(); j++)
-					if (pbiR.getValueAtIndexOfSlotsStatus(j) == 1) {
-						readRecordFromBuffer(recordR, bufferR, getSlotCount() + j * getRecordSize());
-						HeaderPageInfo hpiS = new HeaderPageInfo();
+				HeaderPageInfo hpiS = new HeaderPageInfo();
+				hpS.getHeaderPageInfo(hpiS);
+
+				for (int j = 1; j < hpiS.getNbPagesDeDonnees(); j++)
+					if (hpiS.getNbSlotsAvailableAt(j) < hpS.getSlotCount()) {
+
+						PageId piS = new PageId(hpS.getFileId(), j);
+						ByteBuffer bufferS = BufferManager.getPage(piS);
 						PageBitmapInfo pbiS = new PageBitmapInfo(hpS.getSlotCount());
-						Record recordS = new Record();
+						hpS.readPageBitmapInfo(bufferS, pbiS);
 
-						hpS.getHeaderPageInfo(hpiS);
+						for (int k = 0; k < getSlotCount(); k++)
+							if (pbiR.getValueAtIndexOfSlotsStatus(k) == 1) {
 
-						for (int k = 1; k < hpiS.getNbPagesDeDonnees(); k++)
-							if (hpiS.getNbSlotsAvailableAt(k) < hpS.getSlotCount()) {
-								PageId piS = new PageId(hpS.getFileId(), k);
-								ByteBuffer bufferS = BufferManager.getPage(piS);
-								hpS.readPageBitmapInfo(bufferS, pbiS);
+								Record recordR = new Record();
+								readRecordFromBuffer(recordR, bufferR, getSlotCount() + k * getRecordSize());
+								String valueR = recordR.getValueAtIndex(columnR);
 
 								for (int l = 0; l < hpS.getSlotCount(); l++)
 									if (pbiS.getValueAtIndexOfSlotsStatus(l) == 1) {
+
+										Record recordS = new Record();
 										hpS.readRecordFromBuffer(recordS, bufferS,
 												hpS.getSlotCount() + l * hpS.getRecordSize());
-										String r = recordR.getValueAtIndex(columnR).trim();
-										String s = recordS.getValueAtIndex(columnS).trim();
-										if (r.trim().equals(s.trim())) {
-											IG.println(++recordCompt + ". ");
-											IG.println(recordR + " " + recordS);
-										}
-									}
-								BufferManager.freePage(piS, false);
-							}
+										String valueS = recordS.getValueAtIndex(columnS);
 
+										if (valueR.trim().equals(valueS.trim()))
+											IG.println(++recordCompt + ". " + recordR + " " + recordS);
+									}
+							}
+						BufferManager.freePage(piS, false);
 					}
 				BufferManager.freePage(piR, false);
 			}
@@ -437,9 +422,7 @@ public class HeapFile {
 	}
 
 	public void joinindex(HeapFile hpS, int columnR, int columnS) throws IOException {
-		Btree btree = hpS.getBreeWithKey(columnS);
-
-		if (btree == null) {
+		if (hpS.btrees[columnS] == null) {
 			IG.println("Index does not exist");
 		} else {
 			int recordCompt = 0;
@@ -457,15 +440,14 @@ public class HeapFile {
 					for (int j = 0; j < getSlotCount(); j++)
 						if (pbiR.getValueAtIndexOfSlotsStatus(j) == 1) {
 							readRecordFromBuffer(recordR, bufferR, getSlotCount() + j * getRecordSize());
-							Entry entry = btree.findEntry(recordR.getValueAtIndex(columnR));
+							Entry entry = hpS.btrees[columnS].findEntry(recordR.getValueAtIndex(columnR));
 							if (entry != null)
 								for (Rid r : entry.getRids()) {
 									PageId piS = new PageId(hpS.getFileId(), r.getIdxPage());
 									ByteBuffer bufferS = BufferManager.getPage(piS);
 									Record recordS = new Record();
 									hpS.readRecordFromBuffer(recordS, bufferS, r.getOffset());
-									IG.println(++recordCompt + ". ");
-									IG.println(recordR + " " + recordS);
+									IG.println(++recordCompt + ". " + recordR + " " + recordS);
 									BufferManager.freePage(piS, false);
 								}
 						}
